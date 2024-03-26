@@ -1,0 +1,78 @@
+@font-face {
+    font-family: "JetBrains Mono";
+    font-style: normal;
+    src: url("font/JetbrainsMono/Regular.ttf");
+}
+@font-face {
+    font-family: "JetBrains Mono";
+    font-style: italic;
+    src: url("font/JetbrainsMono/Italic.ttf");
+}
+
+* {
+    box-sizing: border-box;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
+}
+
+body {
+    margin: 0;
+    padding: 10px;
+    width: 100vw;
+    height: 100vh;
+}
+
+#content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+#left, #right {
+    height: 100%;
+    flex-basis: 1px;
+    flex-grow: 1;
+
+    display: flex;
+    flex-direction: column;
+}
+
+#left {
+    display: flex;
+    flex-direction: column;
+    margin-right: 10px;
+}
+
+#code-input-container, #tokens-output, #parse-output {
+    width: 100%;
+    flex-basis: 1px;
+    flex-grow: 1;
+}
+
+#code-input-container {
+    flex-grow: 2;
+    margin-bottom: 10px;
+}
+
+#code-input {
+    width: 100%;
+    height: 100%;
+}
+
+#code-input, #tokens-output, #right {
+    border: 1px solid black;
+
+    outline: none;
+    resize: none;
+    padding: 5px;
+}
+
+#parse-output:empty::before {
+    content: "Parse tree will appear here";
+    color: #666;
+}
+#tokens-output:empty::before {
+    content: "Token stream will appear here";
+    color: #666;
+}
