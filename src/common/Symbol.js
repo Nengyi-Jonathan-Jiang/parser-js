@@ -48,4 +48,7 @@ export class Symbol {
     toString() {
         return this.#name;
     }
+
+    static __START__ = Symbol.get('\x01');
+    static __END__ = Symbol.get('\x02');
 }
