@@ -1,11 +1,10 @@
-import {
+import Regex, {
 	AlternationNode,
 	ConcatenationNode,
 	KleeneStarNode,
 	OptionalNode,
 	LeafNode
 } from "./Regex.js";
-import Regex from "./Regex.js"; 
 import {ALL_CHARS, DIGIT_CHARS, LETTER_CHARS, WORD_CHARS} from "../fsm/FiniteStateMachine";
 
 /**

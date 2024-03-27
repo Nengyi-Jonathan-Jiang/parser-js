@@ -38,7 +38,7 @@ export default class Regex {
      * @abstract
      * @returns {NFA}
      */
-    compile();
+    compile() {}
 
     static parse = parseRegex;
 }
