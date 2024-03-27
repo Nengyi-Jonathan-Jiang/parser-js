@@ -31,7 +31,7 @@ function update_tokens(string, tokens) {
         const n = document.createElement('span');
         n.innerText = token.type.name;
         const v = document.createElement('span');
-        v.innerText = token.value;
+        if(token.value !== token.type.name) v.innerText = token.value;
 
         s.append(n, v);
         tokens_output.appendChild(s);

@@ -1,16 +1,18 @@
-import {Symbol} from "../../common/Symbol";
+import {Symbol} from "../../common/Symbol.js";
 
 export const FSM_ERROR_STATE = -1;
 export const DFA_INITIAL_STATE = 0;
 
 // noinspection SpellCheckingInspection
-export const ALL_CHARS = new Set(" !\"#$ % & '()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~");
+export const ALL_CHARS = new Set("\n\t !\"#$ % & '()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~");
 // noinspection SpellCheckingInspection
 export const WORD_CHARS = new Set("ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz0123456789")
 // noinspection SpellCheckingInspection
 export const LETTER_CHARS = new Set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
 // noinspection SpellCheckingInspection
 export const DIGIT_CHARS = new Set("0123456789");
+// noinspection SpellCheckingInspection
+export const SPACE_CHARS = new Set("\n\t ");
 
 export class DFA {
     /** @typedef {Map<string, number>} DFATableEntry */
@@ -59,8 +61,11 @@ export class NFA {
 
     static EPSILON = 'ε';
 
-    /** @param {number} state */
-    #getEntryForState(state) {
+    /**
+     * @param {number} state
+     * @type {NFATableEntry}
+     */
+    getEntryForState(state) {
         if(!this.#transitionTable.has(state)) {
             this.#transitionTable.set(state, new Map);
         }
@@ -71,8 +76,8 @@ export class NFA {
      * @param {number} state
      * @param {string} char
      */
-    #getTransitionsOnChar(state, char) {
-        const entryForState = this.#getEntryForState(state);
+    getTransitionsOnChar(state, char) {
+        const entryForState = this.getEntryForState(state);
         if(!entryForState.has(char)) {
             entryForState.set(char, new Set);
         }
@@ -87,7 +92,7 @@ export class NFA {
             throw new Error('NFA can only transition on single characters, not strings');
         }
 
-        const transitions = this.#getTransitionsOnChar(startState, char);
+        const transitions = this.getTransitionsOnChar(startState, char);
         if(transitions.size) {
             throw new Error('Cannot have multiple non-epsilon transition in NFA');
         }
@@ -100,7 +105,7 @@ export class NFA {
             throw new Error('Cannot have transition from final state in NFA');
         }
 
-        const transitions = this.#getTransitionsOnChar(startState, NFA.EPSILON);
+        const transitions = this.getTransitionsOnChar(startState, NFA.EPSILON);
         endStates.forEach(i => transitions.add(i));
 
         return this;

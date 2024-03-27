@@ -29,6 +29,7 @@ struct DFA_state_info {
 		return nfa_states <=> other.nfa_states;
 	}
 };
+
 struct multi_accept_NFA : public NFA {
 
 	std::map<FSMState, const Symbol*> accepting_states;
@@ -36,6 +37,7 @@ struct multi_accept_NFA : public NFA {
 	multi_accept_NFA (table_t transitions, std::map<FSMState, const Symbol*> acceptingStates)
 		: NFA(std::move(transitions)), accepting_states(std::move(acceptingStates)) {}
 };
+
 class nfa2dfa {
 	multi_accept_NFA merged;
 	FSMState next_dfa_state{ 1 };

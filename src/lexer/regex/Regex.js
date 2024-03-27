@@ -1,5 +1,5 @@
-import {NFA} from "../fsm/FiniteStateMachine";
-import {parseRegex} from "./RegexParser";
+import {NFA} from "../fsm/FiniteStateMachine.js";
+import {parseRegex} from "./RegexParser.js";
 
 /**
  * A class representing the parse tree of a regular expression.
@@ -8,7 +8,7 @@ import {parseRegex} from "./RegexParser";
  */
 export default class Regex {
     /** @type {Regex[]} */
-    #children;
+    #children = [];
 
     /** @param {Regex} children */
     constructor(...children) {
@@ -41,6 +41,19 @@ export default class Regex {
     compile() {}
 
     static parse = parseRegex;
+
+    toString() {
+        return JSON.stringify(this.toJSON(), null, 2);
+    }
+
+    toJSON() {
+        return {
+            name: this.constructor.name,
+            ...(this.childNodes.length ? {
+                children: this.childNodes.map(i => i.toJSON())
+            } : {})
+        };
+    }
 }
 
 export class LeafNode extends Regex {
@@ -62,9 +75,18 @@ export class LeafNode extends Regex {
         }
         return result;
     }
+
+    toJSON() {
+        return [...this.#acceptedCharacters]
+    }
 }
 
 export class AlternationNode extends Regex {
+    /** @param {Regex} children */
+    constructor(...children) {
+        super(...children);
+    }
+
     compile() {
 
         // {0 ==a=> 1} | {0 ==b=> 1} | {0 ==c=> 1} ... =
@@ -75,15 +97,20 @@ export class AlternationNode extends Regex {
             const newState = NFA.getNextUnusedState();
 
             result.mergeWith(compiledChild.remap(newState, NFA.FINAL_STATE))
-                  .addTransition(NFA.INITIAL_STATE, NFA.EPSILON, newState);
+                  .addEpsilonTransition(NFA.INITIAL_STATE, newState);
         }
         return result;
     }
 }
 
 export class ConcatenationNode extends Regex {
+    /** @param {Regex} children */
+    constructor(...children) {
+        super(...children);
+    }
+
     compile() {
-        if(this.children.length === 0) {
+        if(this.childNodes.length === 0) {
             return NFA.trivialNFA;
         }
 
@@ -144,5 +171,27 @@ export class KleeneStarNode extends Regex {
 
     addChild(child) {
         throw new Error('Kleene star regex node can only have one child');
+    }
+}
+
+export class KleenePlusNode extends Regex {
+    /** @param {Regex} child */
+    constructor(child) {
+        super(child);
+    }
+
+    compile() {
+        // {0 ==a=> 1}+ =
+        // {[0 ==ε=> x ==ε=> [0, 1], 0 ==a=> x]}
+
+        const [result] = this.compileChildren();
+        const nextState = NFA.getNextUnusedState();
+
+        return result.remap(NFA.INITIAL_STATE, nextState)
+            .addEpsilonTransition(nextState, NFA.INITIAL_STATE, NFA.FINAL_STATE);
+    }
+
+    addChild(child) {
+        throw new Error('Kleene plus regex node can only have one child');
     }
 }

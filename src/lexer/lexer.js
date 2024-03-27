@@ -15,7 +15,7 @@ class Lexer {
                     'identifier' :
                     value.match(/^\d+(\.\d*)?|\.\d+$/) ?
                     'number-literal' :
-                    'symbol';
+                    value;
 
                 return new Token(
                     Symbol.get(type),

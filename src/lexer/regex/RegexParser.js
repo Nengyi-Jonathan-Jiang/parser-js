@@ -3,9 +3,9 @@ import Regex, {
 	ConcatenationNode,
 	KleeneStarNode,
 	OptionalNode,
-	LeafNode
+	LeafNode, KleenePlusNode
 } from "./Regex.js";
-import {ALL_CHARS, DIGIT_CHARS, LETTER_CHARS, WORD_CHARS} from "../fsm/FiniteStateMachine";
+import {ALL_CHARS, DIGIT_CHARS, LETTER_CHARS, SPACE_CHARS, WORD_CHARS} from "../fsm/FiniteStateMachine.js";
 
 /**
  * @typedef {"STRING" | "ALTERNATION" | "PAREN"} RegexOperatorType
@@ -13,9 +13,9 @@ import {ALL_CHARS, DIGIT_CHARS, LETTER_CHARS, WORD_CHARS} from "../fsm/FiniteSta
 
 class RegexParser {
 	/** @type {Regex[]} */
-    #stack;
+    #stack = [];
     /** @type {RegexOperatorType[]} */
-    #operatorStack;
+    #operatorStack = [];
 
     get hasOperatorsLeft() {
         return !!this.#stack.length;
@@ -90,7 +90,7 @@ class RegexParser {
      * @param {function(Regex):Regex} op
      */
 	apply (op){
-        this.#stack.push(op(this.#stack.pop()));
+        this.#stack.push(new op(this.#stack.pop()));
     }
 
     get result() {
@@ -110,6 +110,8 @@ function charsForEscape(escapedCharacter) {
 			return [...LETTER_CHARS];
 		case 'd':
 			return [...DIGIT_CHARS];
+		case 's':
+			return [...SPACE_CHARS];
 		case 'n':
 			return ['\n']
 		case 't':
@@ -140,6 +142,9 @@ export function parseRegex(src) {
 				break;
 			case ')':
 				reParser.end_group();
+				break;
+			case '+':
+				reParser.apply(KleenePlusNode);
 				break;
 			case '*':
 				reParser.apply(KleeneStarNode);
@@ -181,14 +186,8 @@ export function parseRegex(src) {
 			case ']':
 				throw new Error("Error parsing regex: mismatched brackets []");
 			case '\\':
-				c = src[++i];
-
-				const addedLetters = c === '\\' ?
-					charsForEscape(src[++i]) :
-					[c];
-
 				reParser.concat();
-				reParser.chars(new Set(addedLetters));
+				reParser.chars(new Set(charsForEscape(src[++i])));
 				break;
 
 			default:
