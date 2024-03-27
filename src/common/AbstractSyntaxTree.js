@@ -1,4 +1,4 @@
-import {Symbol} from "./Symbol";
+import {Symbol} from "./Symbol.js";
 
 /**
  * A class representing an abstract syntax tree

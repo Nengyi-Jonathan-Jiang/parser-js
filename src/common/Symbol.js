@@ -2,7 +2,7 @@ export class Symbol {
     /** @type {Map<string, Symbol>} */
     static #map = new Map;
     /** @type {number} */
-    static #id = 0;
+    static #nextID = 0;
 
     /** @type {string} */
     #name;
@@ -12,7 +12,7 @@ export class Symbol {
     /** @private */
     constructor(name) {
         this.#name = name;
-        this.#id = Symbol.#id++;
+        this.#id = Symbol.#nextID++;
     }
 
     /**
@@ -37,7 +37,7 @@ export class Symbol {
      * @returns {Symbol}
      */
     static get(name) {
-        const {#map: map} = this;
+        const map = this.#map;
 
         if(!map.has(name)) {
             map.set(name, new Symbol(name));
