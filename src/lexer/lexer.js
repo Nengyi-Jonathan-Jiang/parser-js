@@ -7,11 +7,11 @@ class Lexer {
      */
     lex(string) {
         return [...string.matchAll(
-            /([a-zA-Z_\-@#][\w-]*|\d+(?:\.\d*)?|\.\d+|\S)/g
+            /([a-zA-Z_@#][\w-]*|-?\d+(?:\.\d*)?|-?\.\d+|\S)/g
         )].map(
             ({0:{length}, 1:value, index}) => {
                 const type =
-                    value.match(/^[a-zA-Z_\-@#][\w-]*$/) ?
+                    value.match(/^[a-zA-Z_@#][\w-]*$/) ?
                     'identifier' :
                     value.match(/^\d+(\.\d*)?|\.\d+$/) ?
                     'number-literal' :

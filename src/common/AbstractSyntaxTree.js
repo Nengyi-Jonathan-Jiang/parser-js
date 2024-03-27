@@ -13,7 +13,7 @@ export class AbstractSyntaxTree {
     
     /**
      * @param {Symbol} nodeType The type of the internal node
-     * @param {AbstractSyntaxTree|T} children The children of the internal node
+     * @param {AbstractSyntaxTree|T} children The childNodes of the internal node
      */
     constructor(nodeType, ...children) {
         this.#nodeType = nodeType;
@@ -21,7 +21,7 @@ export class AbstractSyntaxTree {
     }
 
     /**
-     * The children of this node
+     * The childNodes of this node
      * @type {(AbstractSyntaxTree|T)[]}
      */
     get children(){
