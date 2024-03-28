@@ -1,19 +1,12 @@
-import Regex from "../regex/Regex.js";
 import {Symbol} from "../../common/Symbol.js";
 import {DFA, NFA} from "./FiniteStateMachine.js";
-
-// export std::unique_ptr<DFA> compileRulesToDFA (const std::vector<LexRule>& rules);
-//
-// using FSMState = FSMState;
-// using table_t = NFA::table_t;
-// using entry_t = NFA::entry_t;
 
 /**
  * @param {number[]} states
  * @param {Symbol} symbol
  */
 function createDFAStateInfo (states, symbol) {
-    return `${states.toSorted().join(',')}|${symbol.name}`;
+    return `${states.toSorted().join(',')}|${symbol?.name ?? ''}`;
 }
 /**
  * @param {string} info
@@ -23,20 +16,15 @@ function getDFAStateInfo(info) {
     const [states, symbol] = info.split(/\|/);
     return {
         states: states.split(',').map(i => +i),
-        symbol: Symbol.get(symbol)
-    };
+        symbol: symbol ? Symbol.get(symbol) : null
+    }
 }
 
 class MultiAcceptNFA extends NFA {
     /** @type {Map<number, Symbol>} */
-    acceptingStates;
+    acceptingStates = new Map;
 
-// 	multi_accept_NFA (table_t transitions, std::map<FSMState, const Symbol*> acceptingStates)
-// 		: NFA(std::move(transitions)), accepting_states(std::move(acceptingStates)) {}
-// };
-
-    constructor(transitions, acceptingStates) {
-        // TODO
+    constructor() {
         super();
     }
 }
@@ -48,10 +36,11 @@ class MultiAcceptNFA extends NFA {
  * @param {boolean} [has_manual_check]
  * @template T
  */
-function compute_closure (s, f, has_manual_check=false) {
+export function compute_closure (s, f, has_manual_check=false) {
     const edge = new Set(s);
+
     while (edge.size) {
-        const element = edge.entries().next();
+        const element = edge.values().next().value;
         edge.delete(element);
 
         for (const x of f(element)) {
@@ -66,6 +55,8 @@ function compute_closure (s, f, has_manual_check=false) {
             }
         }
     }
+
+    return s;
 }
 
 class NFA2DFA {
@@ -89,7 +80,7 @@ class NFA2DFA {
     epsilonClosure(states) {
         const closure = new Set(states);
         /** @type {Symbol} */
-        let accepted_symbol;
+        let accepted_symbol = null;
         compute_closure(closure, s => {
             let accepting_state = this.#merged.acceptingStates.get(s);
             if (accepting_state && (!accepted_symbol || accepted_symbol.id > accepting_state.id)) {
@@ -121,7 +112,11 @@ class NFA2DFA {
             for (const nfa_state of getDFAStateInfo(this.#stateInfo.get(dfa_state)).states) {
 				for (const [c, targets] of this.#merged.getEntryForState(nfa_state)) {
 					if (c !== NFA.EPSILON) {
-                        targets.forEach(i => merged_transitions.get(c).add(i))
+                        if(!merged_transitions.has(c)) merged_transitions.set(c, new Set);
+                        targets.forEach(i => merged_transitions
+                            .get(c)
+                            .add(i)
+                        )
 					}
 				}
 			}
@@ -143,7 +138,7 @@ class NFA2DFA {
 				this.#stateInfo.set(newState, newStateInfo);
 				this.#correspondingState.set(newStateInfo, newState);
 				result.addTransition(dfa_state, c, newState);
-				result.acceptingStates.put(newState, getDFAStateInfo(newStateInfo).symbol);
+				result.acceptingStates.set(newState, getDFAStateInfo(newStateInfo).symbol);
 			}
 			return created_states;
 		}, true);
@@ -168,12 +163,12 @@ function remap_states (table, state_counter) {
 
 	for (const [ state, transitions ] of table) {
 		if (!mapped_states.has(state))
-			mapped_states.set(state, state_counter++);
+			mapped_states.set(state, state_counter[0]++);
 
 		for (const [, targets ] of transitions)
 			for (const target of targets)
 				if (!mapped_states.has(target))
-					mapped_states.set(target, state_counter++);
+					mapped_states.set(target, state_counter[0]++);
 	}
 
     /** @type {Map<number, Map<string, Set<number>>>} */
@@ -205,15 +200,21 @@ export function compileToDFA (...rules) {
 	const new_state_counter = [1];
 
 	for (const {nfa, symbol} of rules) {
+        console.log(`${symbol} table:\n${nfa}`);
 
 		const {new_table, mapped_start, mapped_end} = remap_states(nfa.transitionTable, new_state_counter);
 
-        const a = {transitionTable: new_table};
+        console.log(`remapped to ${mapped_start}, ${mapped_end}:\n${NFA.prototype.toString.call({
+            transitionTable: new_table
+        })}`);
 
-		merged.mergeWith(a);
+        // noinspection JSAnnotator, JSCheckFunctionSignatures
+		merged.mergeWith({transitionTable: new_table});
 		merged.addEpsilonTransition(0, mapped_start);
 		merged.acceptingStates.set(mapped_end, symbol);
 	}
+
+    console.log(merged.toString());
 
     return new NFA2DFA(merged).convert();
 }

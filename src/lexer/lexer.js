@@ -13,7 +13,7 @@ class Lexer {
                 const type =
                     value.match(/^[a-zA-Z_@#][\w-]*$/) ?
                     'identifier' :
-                    value.match(/^\d+(\.\d*)?|\.\d+$/) ?
+                    value.match(/^-?\d+(\.\d*)?|-?\.\d+$/) ?
                     'number-literal' :
                     value;
 

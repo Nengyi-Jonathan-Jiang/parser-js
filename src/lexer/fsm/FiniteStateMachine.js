@@ -43,6 +43,10 @@ export class DFA {
         return this.#transitionTable.get(state);
     }
 
+    on(state, char) {
+        return this.getEntryForState(state).get(char);
+    }
+
     addTransition(startState, char, endState) {
         if(char.length !== 1) {
             throw new Error('DFA can only transition on single characters, not strings');
@@ -68,6 +72,10 @@ export class DFA {
 
         return res;
     }
+
+    toString() {
+        return printTable(this.transitionTable);
+    }
 }
 
 /**
@@ -78,7 +86,7 @@ export class DFA {
  */
 export class NFA {
     static get INITIAL_STATE() { return 0 }
-    static get FINAL_STATE() { return 1 }
+    static get FINAL_STATE() { return -1 }
 
     /** @typedef {Map<string, Set<number>>} NFATableEntry */
 
@@ -201,7 +209,7 @@ export class NFA {
         return this.clone().remap(newInitialState, newFinalState);
     }
 
-    static #nextUnusedState = 2;
+    static #nextUnusedState = 1;
     static getNextUnusedState() {
         return this.#nextUnusedState++;
     }
@@ -226,4 +234,90 @@ export class NFA {
         res.addTransition(NFA.INITIAL_STATE, NFA.FINAL_STATE);
         return res;
     }
+    
+    toString() {
+        return printTable(this.transitionTable);
+    }
+}
+
+/** @param {Map<number, Map<string, number | Set<number>>>} t */
+function printTable(t) {
+    let res = '';
+
+    /** @type {Set<string> }*/
+    let all_chars = new Set;
+
+    let table = new Map([...t].sort((a, b) => {
+        return a[0] - b[0]
+    }));
+
+    let has_epsilon = false;
+
+    for (const [, transitions] of table) {
+        for (const [c] of transitions) {
+            if (c !== NFA.EPSILON) {
+                all_chars.add(c);
+            }
+            else has_epsilon = true;
+        }
+    }
+
+    all_chars = new Set([...all_chars].sort())
+
+    res += "\t | ";
+    for (const c of all_chars) {
+        res += c + "\t | ";
+    }
+    if(has_epsilon) res += "epsilon transitions:\n";
+    else {
+        res = res.substring(0, res.length - 2);
+    }
+
+    for (const [ state, transitions ] of table) {
+        if (state === NFA.FINAL_STATE) {
+            continue;
+        }
+
+        res += "-----+";
+        for (let i = 0; i < all_chars.size; i++) {
+            res += "-------+";
+        }
+        res += "-------------------\n";
+
+        res += `${state === NFA.INITIAL_STATE ? "i" : state}\t | `;
+
+        for (const c of all_chars) {
+            if (transitions.has(c)) {
+                let s = transitions.get(c);
+                if(!s instanceof Set) s = new Set([s]);
+
+                for (const to of s) {
+                    res += (
+                        to === NFA.INITIAL_STATE ? "i" :
+                            to === NFA.FINAL_STATE ? "a" :
+                                to
+                    );
+                }
+            } else {
+                res += " ";
+            }
+            res += "\t | ";
+        }
+
+        if (transitions.has(NFA.EPSILON)) {
+            for (const to of transitions.get(NFA.EPSILON)) {
+                res += (
+                    to === NFA.INITIAL_STATE ? "i" :
+                        to === NFA.FINAL_STATE ? "a" :
+                            to
+                ) + ", ";
+            }
+            if(res.endsWith(', ')) res = res.substring(0, res.length - 2);
+        }
+
+        res += "\n";
+    }
+    res += '\n';
+
+    return res;
 }
