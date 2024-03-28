@@ -56,7 +56,7 @@ class nfa2dfa {
 				accepted_symbol = accepting_state;
 			}
 			std::map<char, std::set<FSMState>>& transitions = merged.table.at(s);
-			return transitions.contains('\0') ? transitions.at('\0') : std::set<FSMState>{};
+			return transitions.contains('\0') ?? std::set<FSMState>{};
 		});
 		return DFA_state_info(closure, accepted_symbol);
 	}

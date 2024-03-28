@@ -31,6 +31,32 @@ export class DFA {
         return this.#accepting_states;
     }
 
+
+    /**
+     * @param {number} state
+     * @return {DFATableEntry}
+     */
+    getEntryForState(state) {
+        if(!this.#transitionTable.has(state)) {
+            this.#transitionTable.set(state, new Map);
+        }
+        return this.#transitionTable.get(state);
+    }
+
+    addTransition(startState, char, endState) {
+        if(char.length !== 1) {
+            throw new Error('DFA can only transition on single characters, not strings');
+        }
+
+        const transitions = this.getEntryForState(startState);
+        if(transitions.has(char)) {
+            throw new Error('Cannot have multiple transitions in DFA');
+        }
+        transitions.set(char, endState);
+
+        return this;
+    }
+
     clone() {
         const res = new DFA;
 
@@ -53,7 +79,7 @@ export class DFA {
 export class NFA {
     static get INITIAL_STATE() { return 0 }
     static get FINAL_STATE() { return 1 }
-    
+
     /** @typedef {Map<string, Set<number>>} NFATableEntry */
 
     /** @type {Map<number, NFATableEntry>} */
@@ -82,6 +108,10 @@ export class NFA {
             entryForState.set(char, new Set);
         }
         return entryForState.get(char);
+    }
+
+    get transitionTable() {
+        return this.#transitionTable;
     }
 
     addTransition(startState, char, endState) {
@@ -115,7 +145,7 @@ export class NFA {
      * @param {NFA} other
      */
     mergeWith(other) {
-        this.#transitionTable = new Map([...this.#transitionTable, ...other.#transitionTable]);
+        this.#transitionTable = new Map([...this.transitionTable, ...other.transitionTable]);
 
         return this;
     }

@@ -80,9 +80,9 @@ class NFA2DFA {
     /** @type {Set<string>} */
     #seenStateInfo = new Set;
 
-// 	explicit nfa2dfa (multi_accept_NFA merged) : merged(std::move(merged)) {}
-    constructor() {
-        // TODO
+    /** @param {MultiAcceptNFA} merged */
+    constructor(merged) {
+        this.#merged = merged;
     }
 
     /** @param {Set<number>} states */
@@ -98,9 +98,7 @@ class NFA2DFA {
 
 			const transitions = this.#merged.getEntryForState(s);
 
-            return transitions.contains(NFA.EPSILON) ?
-                transitions.get(NFA.EPSILON) :
-                new Set;
+            return transitions.get(NFA.EPSILON) ?? new Set;
         })
 
         return createDFAStateInfo([...closure], accepted_symbol);
@@ -116,7 +114,7 @@ class NFA2DFA {
 
         let states = new Set([0]);
 
-		compute_closure(states, (dfa_state) => {
+		compute_closure(states, dfa_state => {
             /** @type {Map<string, Set<number>>} */
 			const merged_transitions = new Map;
 
@@ -128,144 +126,94 @@ class NFA2DFA {
 				}
 			}
 
-			std::set<FSMState> created_states;
-			for (auto& [ c, targets ]: merged_transitions) {
-				auto new_state_info = NFA_epsilon_closure(targets);
+            /** @type {Set<number>} */
+			const created_states = new Set;
+			for (const [ c, targets ] of merged_transitions) {
+				const newStateInfo = this.epsilonClosure(targets);
 
-				if (seen_state_info.contains(new_state_info)) {
-					result->table[dfa_state][c] = corresponding_state[new_state_info];
+				if (this.#seenStateInfo.has(newStateInfo)) {
+					result.addTransition(dfa_state, c, this.#correspondingState.get(newStateInfo));
 					continue;
 				}
 
-				seen_state_info.emplace(new_state_info);
-				FSMState new_state = next_dfa_state++;
+				this.#seenStateInfo.add(newStateInfo);
+				const newState = this.#nextState++;
 
-				created_states.emplace(new_state);
-				state_info.emplace(new_state, new_state_info);
-				corresponding_state.emplace(new_state_info, new_state);
-				result->table[dfa_state][c] = new_state;
-				result->accepting_states.emplace(new_state, new_state_info.accepted_symbol);
-				if (!result->table.contains(new_state)) {
-					result->table.emplace(new_state, std::map<char, FSMState>{});
-				}
+				created_states.add(newState);
+				this.#stateInfo.set(newState, newStateInfo);
+				this.#correspondingState.set(newStateInfo, newState);
+				result.addTransition(dfa_state, c, newState);
+				result.acceptingStates.put(newState, getDFAStateInfo(newStateInfo).symbol);
 			}
 			return created_states;
 		}, true);
 
-		return std::move(result);
+		return result;
     }
 }
 
-// 	std::unique_ptr<DFA> convert () {
-// 		std::unique_ptr<DFA> result = std::make_unique<DFA>();
-//
-// 		// Find the state corresponding to state 0 and push to edge
-// 		auto initial_state = NFA_epsilon_closure({ 0 });
-// 		state_info.emplace(0, initial_state);
-// 		corresponding_state.emplace(initial_state, 0);
-// 		std::set<FSMState> states{ 0 };
-//
-// 		compute_closure(states, [ & ] (const FSMState dfa_state) -> std::set<FSMState> {
-//
-// 			std::map<char, std::set<FSMState>> merged_transitions;
-// 			for (const FSMState nfa_state: state_info.at(dfa_state).nfa_states) {
-// 				for (auto& [ c, targets ]: merged.table.at(nfa_state)) {
-// 					if (c != '\0') {
-// 						merged_transitions[c].insert(targets.begin(), targets.end());
-// 					}
-// 				}
-// 			}
-//
-// 			std::set<FSMState> created_states;
-// 			for (auto& [ c, targets ]: merged_transitions) {
-// 				auto new_state_info = NFA_epsilon_closure(targets);
-//
-// 				if (seen_state_info.contains(new_state_info)) {
-// 					result->table[dfa_state][c] = corresponding_state[new_state_info];
-// 					continue;
-// 				}
-//
-// 				seen_state_info.emplace(new_state_info);
-// 				FSMState new_state = next_dfa_state++;
-//
-// 				created_states.emplace(new_state);
-// 				state_info.emplace(new_state, new_state_info);
-// 				corresponding_state.emplace(new_state_info, new_state);
-// 				result->table[dfa_state][c] = new_state;
-// 				result->accepting_states.emplace(new_state, new_state_info.accepted_symbol);
-// 				if (!result->table.contains(new_state)) {
-// 					result->table.emplace(new_state, std::map<char, FSMState>{});
-// 				}
-// 			}
-// 			return created_states;
-// 		}, true);
-//
-// 		return std::move(result);
-// 	}
-//
-// public:
-// 	static std::unique_ptr<DFA> convert (const multi_accept_NFA& merged) {
-// 		nfa2dfa convertor{ merged };
-// 		return std::move(convertor.convert());
-// 	}
-// };
-//
-// std::tuple<table_t, FSMState, FSMState> remap_states (const table_t& table, FSMState& state_counter) {
-// 	const FSMState mapped_start = state_counter++;
-// 	const FSMState mapped_end = state_counter++;
-// 	std::map<FSMState, FSMState> mapped_states{{ 0, mapped_start },
-// 											 { 1, mapped_end }};
-//
-// 	for (auto [ state, transitions ]: table) {
-// 		if (!mapped_states.contains(state)) {
-// 			mapped_states[state] = state_counter++;
-// 		}
-// 		for (auto [ c, targets ]: transitions) {
-// 			for (const FSMState target: targets) {
-// 				if (!mapped_states.contains(target)) {
-// 					mapped_states[target] = state_counter++;
-// 				}
-// 			}
-// 		}
-// 	}
-//
-// 	NFA::table_t new_table{{ mapped_end, {}}};
-// 	for (auto [ state, transitions ]: table) {
-// 		NFA::entry_t new_transitions;
-// 		for (auto [ c, targets ]: transitions) {
-// 			std::set<FSM::FSMState> new_targets;
-// 			for (const FSM::FSMState target: targets) {
-// 				new_targets.emplace(mapped_states[target]);
-// 			}
-//
-// 			new_transitions.emplace(c, new_targets);
-// 		}
-// 		new_table.emplace(mapped_states[state], new_transitions);
-// 	}
-//
-// 	return { new_table, mapped_start, mapped_end };
-// }
-//
-// std::unique_ptr<DFA> compileRulesToDFA (const std::vector<LexRule>& rules) {
-// 	multi_accept_NFA merged{{},
-// 							{}};
-// 	FSMState new_state_counter = 1;
-//
-// 	for (const auto& rule: rules) {
-// 		auto parsed = RegexParser::parse(rule.regex);
-// 		const NFA nfa = NFABuilder::NFAFromRegexParse(parsed);
-//
-// 		auto [ table, mapped_start, mapped_end ] = remap_states(nfa.table, new_state_counter);
-//
-// 		merged.table.insert(table.begin(), table.end());
-// 		merged.table[0]['\0'].emplace(mapped_start);
-// 		merged.accepting_states.emplace(mapped_end, rule.sym);
-// 	}
-//
-// 	return std::move(nfa2dfa::convert(merged));
-// }
+/**
+ * @param {Map<number, Map<string, Set<number>>>} table
+ * @param {[number]} state_counter
+ * @returns {{
+ *      mapped_end: number,
+ *      mapped_start: number,
+ *      new_table: Map<number, Map<string, Set<number>>>
+ * }}
+ */
+function remap_states (table, state_counter) {
+	const mapped_start = state_counter[0]++;
+	const mapped_end = state_counter[0]++;
+	const mapped_states = new Map([[0, mapped_start], [1, mapped_end]]);
 
+	for (const [ state, transitions ] of table) {
+		if (!mapped_states.has(state))
+			mapped_states.set(state, state_counter++);
 
-export function convertNFAtoDFA () {
+		for (const [, targets ] of transitions)
+			for (const target of targets)
+				if (!mapped_states.has(target))
+					mapped_states.set(target, state_counter++);
+	}
 
+    /** @type {Map<number, Map<string, Set<number>>>} */
+	const new_table = new Map([[mapped_end, new Map]]);
+	for (const [ state, transitions ] of table) {
+        /** @type {Map<string, Set<number>>} */
+		const new_transitions = new Map;
+
+		for (const [ c, targets ] of transitions) {
+            /** @type {Set<number>} */
+			const new_targets = new Set;
+			for (const target of targets)
+				new_targets.add(mapped_states.get(target));
+
+			new_transitions.set(c, new_targets);
+		}
+		new_table.set(mapped_states.get(state), new_transitions);
+	}
+
+	return { new_table, mapped_start, mapped_end };
+}
+
+/**
+ * @param {{symbol: Symbol, nfa: NFA}} rules
+ * @returns
+ */
+export function compileToDFA (...rules) {
+    const merged = new MultiAcceptNFA();
+	const new_state_counter = [1];
+
+	for (const {nfa, symbol} of rules) {
+
+		const {new_table, mapped_start, mapped_end} = remap_states(nfa.transitionTable, new_state_counter);
+
+        const a = {transitionTable: new_table};
+
+		merged.mergeWith(a);
+		merged.addEpsilonTransition(0, mapped_start);
+		merged.acceptingStates.set(mapped_end, symbol);
+	}
+
+    return new NFA2DFA(merged).convert();
 }
