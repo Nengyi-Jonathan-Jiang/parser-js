@@ -74,7 +74,10 @@ export class DFA {
     }
 
     toString() {
-        return printTable(this.transitionTable);
+
+        return `${printTable(this.transitionTable)}\naccepts {${
+            [...this.acceptingStates.entries()].map(([a, b]) => `${a} -> ${b}`).join(', ')
+        }}`
     }
 }
 
@@ -268,10 +271,12 @@ function printTable(t) {
     for (const c of all_chars) {
         res += c + "\t | ";
     }
-    if(has_epsilon) res += "epsilon transitions:\n";
+    if(has_epsilon) res += "epsilon transitions:";
     else {
         res = res.substring(0, res.length - 2);
     }
+
+    res += '\n';
 
     for (const [ state, transitions ] of table) {
         if (state === NFA.FINAL_STATE) {
@@ -289,7 +294,7 @@ function printTable(t) {
         for (const c of all_chars) {
             if (transitions.has(c)) {
                 let s = transitions.get(c);
-                if(!s instanceof Set) s = new Set([s]);
+                if(!s[window.Symbol.iterator]) s = new Set([s]);
 
                 for (const to of s) {
                     res += (

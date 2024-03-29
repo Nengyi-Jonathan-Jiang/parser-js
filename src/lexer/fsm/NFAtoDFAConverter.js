@@ -27,6 +27,12 @@ class MultiAcceptNFA extends NFA {
     constructor() {
         super();
     }
+
+    toString() {
+        return `${super.toString()}\naccepts {${
+            [...this.acceptingStates.entries()].map(([a, b]) => `${a} -> ${b}`).join(', ')
+        }}`
+    }
 }
 
 
@@ -138,7 +144,10 @@ class NFA2DFA {
 				this.#stateInfo.set(newState, newStateInfo);
 				this.#correspondingState.set(newStateInfo, newState);
 				result.addTransition(dfa_state, c, newState);
-				result.acceptingStates.set(newState, getDFAStateInfo(newStateInfo).symbol);
+                const acceptedSymbol = getDFAStateInfo(newStateInfo).symbol;
+                if(acceptedSymbol !== null) {
+                    result.acceptingStates.set(newState, acceptedSymbol);
+                }
 			}
 			return created_states;
 		}, true);
@@ -159,7 +168,9 @@ class NFA2DFA {
 function remap_states (table, state_counter) {
 	const mapped_start = state_counter[0]++;
 	const mapped_end = state_counter[0]++;
-	const mapped_states = new Map([[0, mapped_start], [1, mapped_end]]);
+	const mapped_states = new Map(
+        [[NFA.INITIAL_STATE, mapped_start], [NFA.FINAL_STATE, mapped_end]]
+    );
 
 	for (const [ state, transitions ] of table) {
 		if (!mapped_states.has(state))
@@ -200,13 +211,13 @@ export function compileToDFA (...rules) {
 	const new_state_counter = [1];
 
 	for (const {nfa, symbol} of rules) {
-        console.log(`${symbol} table:\n${nfa}`);
+        // console.log(`${symbol} table:\n${nfa}`);
 
 		const {new_table, mapped_start, mapped_end} = remap_states(nfa.transitionTable, new_state_counter);
 
-        console.log(`remapped to ${mapped_start}, ${mapped_end}:\n${NFA.prototype.toString.call({
-            transitionTable: new_table
-        })}`);
+        // console.log(`remapped to ${mapped_start}, ${mapped_end}:\n${NFA.prototype.toString.call({
+        //     transitionTable: new_table
+        // })}`);
 
         // noinspection JSAnnotator, JSCheckFunctionSignatures
 		merged.mergeWith({transitionTable: new_table});
@@ -214,7 +225,10 @@ export function compileToDFA (...rules) {
 		merged.acceptingStates.set(mapped_end, symbol);
 	}
 
-    console.log(merged.toString());
+    // console.log(merged.toString());
 
-    return new NFA2DFA(merged).convert();
+    const result = new NFA2DFA(merged).convert();
+    // console.log(`DFA:\n${result}`);
+
+    return result;
 }

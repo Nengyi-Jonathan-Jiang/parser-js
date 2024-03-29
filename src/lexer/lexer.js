@@ -1,5 +1,23 @@
 import {Token, Symbol} from "../common/common.js";
 
+import Regex from "./regex/Regex.js";
+import {compileToDFA} from "./fsm/NFAtoDFAConverter.js";
+
+const lex_rules = `
+COMMENT := (//[^\\n]*|/\\*([^*]|\\*[^/])*?\\*?\\*/)
+STRING-LITERAL := "[^"\\\\]*(\\\\.[^"\\\\]*)*"
+INT-LITERAL := (0|-?[123456789][\\d]*)
+FLOAT-LITERAL := (0|-?[123456789][\\d]*)(.[\\d]+)?
+BOOL-LITERAL := (true|false)
+`.trim().split(/\s*\n\s*/g).map(i => i.split(':=')).map(([a, b]) => {
+    return {nfa: Regex.parse(
+        b?.trim() ?? a.trim().replaceAll(/[[+.\]]/g, '\\$1')
+    ).compile(), symbol: Symbol.get(a.trim())}
+});
+
+const dfa = compileToDFA(...lex_rules);
+window.dfa = dfa;
+
 class Lexer {
     /**
      * @param {string} string
