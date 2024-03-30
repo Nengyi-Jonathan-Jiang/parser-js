@@ -1,10 +1,11 @@
 import {Symbol} from "../../common/Symbol.js";
 
-export const FSM_ERROR_STATE = -1;
+export const FSM_ERROR_STATE = NaN;
 export const DFA_INITIAL_STATE = 0;
 
 // noinspection SpellCheckingInspection
-export const ALL_CHARS = new Set("\n\t !\"#$ % & '()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~");
+export const ALL_CHARS = new Set("\n\t !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~");
+
 // noinspection SpellCheckingInspection
 export const WORD_CHARS = new Set("ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz0123456789")
 // noinspection SpellCheckingInspection
@@ -27,6 +28,7 @@ export class DFA {
         return this.#transitionTable;
     }
 
+    /** @type {Map<number, Symbol>} */
     get acceptingStates() {
         return this.#accepting_states;
     }
@@ -37,7 +39,7 @@ export class DFA {
      * @return {DFATableEntry}
      */
     getEntryForState(state) {
-        if(!this.#transitionTable.has(state)) {
+        if (!this.#transitionTable.has(state)) {
             this.#transitionTable.set(state, new Map);
         }
         return this.#transitionTable.get(state);
@@ -48,12 +50,12 @@ export class DFA {
     }
 
     addTransition(startState, char, endState) {
-        if(char.length !== 1) {
+        if (char.length !== 1) {
             throw new Error('DFA can only transition on single characters, not strings');
         }
 
         const transitions = this.getEntryForState(startState);
-        if(transitions.has(char)) {
+        if (transitions.has(char)) {
             throw new Error('Cannot have multiple transitions in DFA');
         }
         transitions.set(char, endState);
@@ -64,7 +66,7 @@ export class DFA {
     clone() {
         const res = new DFA;
 
-        for(const [key, value] of this.#transitionTable.entries()){
+        for (const [key, value] of this.#transitionTable.entries()) {
             res.#transitionTable.set(key, new Map(value));
         }
 
@@ -88,8 +90,13 @@ export class DFA {
  * transitions may be nondeterministic.
  */
 export class NFA {
-    static get INITIAL_STATE() { return 0 }
-    static get FINAL_STATE() { return -1 }
+    static get INITIAL_STATE() {
+        return 0
+    }
+
+    static get FINAL_STATE() {
+        return -1
+    }
 
     /** @typedef {Map<string, Set<number>>} NFATableEntry */
 
@@ -103,7 +110,7 @@ export class NFA {
      * @type {NFATableEntry}
      */
     getEntryForState(state) {
-        if(!this.#transitionTable.has(state)) {
+        if (!this.#transitionTable.has(state)) {
             this.#transitionTable.set(state, new Map);
         }
         return this.#transitionTable.get(state);
@@ -115,7 +122,7 @@ export class NFA {
      */
     getTransitionsOnChar(state, char) {
         const entryForState = this.getEntryForState(state);
-        if(!entryForState.has(char)) {
+        if (!entryForState.has(char)) {
             entryForState.set(char, new Set);
         }
         return entryForState.get(char);
@@ -126,23 +133,24 @@ export class NFA {
     }
 
     addTransition(startState, char, endState) {
-        if(startState === NFA.FINAL_STATE) {
+        if (startState === NFA.FINAL_STATE) {
             throw new Error('Cannot have transition from final state in NFA');
         }
-        if(char.length !== 1) {
+        if (char.length !== 1) {
             throw new Error('NFA can only transition on single characters, not strings');
         }
 
         const transitions = this.getTransitionsOnChar(startState, char);
-        if(transitions.size) {
+        if (transitions.size) {
             throw new Error('Cannot have multiple non-epsilon transition in NFA');
         }
         transitions.add(endState);
 
         return this;
     }
+
     addEpsilonTransition(startState, ...endStates) {
-        if(startState === NFA.FINAL_STATE) {
+        if (startState === NFA.FINAL_STATE) {
             throw new Error('Cannot have transition from final state in NFA');
         }
 
@@ -172,7 +180,7 @@ export class NFA {
      * @returns {NFA}
      */
     remap(newInitialState, newFinalState) {
-        if(!this.#transitionTable.size) return this;
+        if (!this.#transitionTable.size) return this;
 
         const table = this.#transitionTable;
 
@@ -213,6 +221,7 @@ export class NFA {
     }
 
     static #nextUnusedState = 1;
+
     static getNextUnusedState() {
         return this.#nextUnusedState++;
     }
@@ -220,7 +229,7 @@ export class NFA {
     clone() {
         const res = new NFA;
 
-        for(const [key, value] of this.#transitionTable.entries()){
+        for (const [key, value] of this.#transitionTable.entries()) {
             res.#transitionTable.set(key, new Map(value));
         }
 
@@ -234,10 +243,10 @@ export class NFA {
      */
     static get trivialNFA() {
         const res = new NFA;
-        res.addTransition(NFA.INITIAL_STATE, NFA.FINAL_STATE);
+        res.addEpsilonTransition(NFA.INITIAL_STATE, NFA.FINAL_STATE);
         return res;
     }
-    
+
     toString() {
         return printTable(this.transitionTable);
     }
@@ -260,8 +269,7 @@ function printTable(t) {
         for (const [c] of transitions) {
             if (c !== NFA.EPSILON) {
                 all_chars.add(c);
-            }
-            else has_epsilon = true;
+            } else has_epsilon = true;
         }
     }
 
@@ -271,14 +279,14 @@ function printTable(t) {
     for (const c of all_chars) {
         res += c + "\t | ";
     }
-    if(has_epsilon) res += "epsilon transitions:";
+    if (has_epsilon) res += "epsilon transitions:";
     else {
         res = res.substring(0, res.length - 2);
     }
 
     res += '\n';
 
-    for (const [ state, transitions ] of table) {
+    for (const [state, transitions] of table) {
         if (state === NFA.FINAL_STATE) {
             continue;
         }
@@ -294,7 +302,7 @@ function printTable(t) {
         for (const c of all_chars) {
             if (transitions.has(c)) {
                 let s = transitions.get(c);
-                if(!s[window.Symbol.iterator]) s = new Set([s]);
+                if (!s[window.Symbol.iterator]) s = new Set([s]);
 
                 for (const to of s) {
                     res += (
@@ -317,7 +325,7 @@ function printTable(t) {
                             to
                 ) + ", ";
             }
-            if(res.endsWith(', ')) res = res.substring(0, res.length - 2);
+            if (res.endsWith(', ')) res = res.substring(0, res.length - 2);
         }
 
         res += "\n";

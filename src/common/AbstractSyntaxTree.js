@@ -1,8 +1,7 @@
-import {Symbol} from "./Symbol.js";
+import {Symbol, Token} from "./common";
 
 /**
  * A class representing an abstract syntax tree
- * @template T
  */
 export class AbstractSyntaxTree {
     /** @type {Symbol} */
@@ -13,16 +12,20 @@ export class AbstractSyntaxTree {
     
     /**
      * @param {Symbol} nodeType The type of the internal node
-     * @param {AbstractSyntaxTree|T} children The childNodes of the internal node
+     * @param {AbstractSyntaxTree|Token} children The childNodes of the internal node
      */
     constructor(nodeType, ...children) {
         this.#nodeType = nodeType;
         this.#children = children;
     }
 
+    get type() {
+        return this.#nodeType;
+    }
+
     /**
      * The childNodes of this node
-     * @type {(AbstractSyntaxTree|T)[]}
+     * @type {(AbstractSyntaxTree|Token)[]}
      */
     get children(){
         return this.#children;

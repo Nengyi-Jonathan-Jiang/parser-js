@@ -49,6 +49,7 @@ export class Symbol {
         return this.#name;
     }
 
+    static __EPSILON__ = Symbol.get('\x00');
     static __START__ = Symbol.get('\x01');
     static __END__ = Symbol.get('\x02');
 }

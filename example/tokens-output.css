@@ -3,23 +3,15 @@
     align-content: start;
 }
 
-.token {
-    margin: 0 .5ex;
-}
-
-#tokens-output :first-child {
-    margin-left: 0 !important;
-}
-
-#tokens-output :last-child {
-    margin-right: 0 !important;
+.token + .token::before {
+    content: " ";
 }
 
 #tokens-output>span:not(.token) {
-    margin: 0 -.5ex;
+    color: red;
 }
 
-.token>span:first-child {
+.token:has(span:last-child:not(:empty))>span:first-child {
     font-style: italic;
 }
 
@@ -37,9 +29,9 @@
     font-variant-ligatures: none;
 }
 
-.token>span:last-child:not(:empty) {
-    outline: 1px solid black;
-    outline-offset: -.6ex;
-    padding: .25ex 1ex;
-    margin: -.25ex 0;
+.token>span:last-child:not(:empty)::before {
+    content: "<"
+}
+.token>span:last-child:not(:empty)::after {
+    content: ">"
 }

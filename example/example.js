@@ -1,6 +1,5 @@
 import {Token, Symbol} from '../src/common/common.js';
 import dysprosiumLexer from "../src/lexer/lexer.js";
-import Regex from '../src/lexer/regex/Regex.js';
 
 
 /** @type {HTMLTextAreaElement} */
@@ -54,4 +53,6 @@ code_input.oninput = _ => {
     const tokens = dysprosiumLexer.lex(input);
 
     update_tokens(input, tokens);
+
+
 }

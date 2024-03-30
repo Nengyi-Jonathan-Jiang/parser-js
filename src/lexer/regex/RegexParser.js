@@ -153,35 +153,34 @@ export function parseRegex(src) {
 				reParser.apply(OptionalNode);
 				break;
 			case '.':
+				reParser.concat();
 				reParser.chars(ALL_CHARS);
 				break;
 			case '[':
-				reParser.concat();
-				{
-					let conjugate = false;
-					/** @type {Set<string>} */
-					let chars = new Set;
-					if (src[i + 1] === '^') {
-						conjugate = true;
-						chars = new Set(ALL_CHARS);
-						i++;
-					}
-					
-					while ((c = src[++i]) !== ']') {
-						const addedLetters = c === '\\' ?
-							charsForEscape(src[++i]) :
-							[c];
-
-						for (const ch of addedLetters) {
-							if (conjugate) chars.delete(ch);
-							else chars.add(ch);
-						}
-					}
-
-					if (chars.size === 0) throw new Error("Error parsing regex: empty character class");
-
-					reParser.chars(chars);
+				let conjugate = false;
+				/** @type {Set<string>} */
+				let chars = new Set;
+				if (src[i + 1] === '^') {
+					conjugate = true;
+					chars = new Set(ALL_CHARS);
+					i++;
 				}
+
+				while ((c = src[++i]) !== ']') {
+					const addedLetters = c === '\\' ?
+						charsForEscape(src[++i]) :
+						[c];
+
+					for (const ch of addedLetters) {
+						if (conjugate) chars.delete(ch);
+						else chars.add(ch);
+					}
+				}
+
+				if (chars.size === 0) throw new Error("Error parsing regex: empty character class");
+
+				reParser.concat();
+				reParser.chars(chars);
 				break;
 			case ']':
 				throw new Error("Error parsing regex: mismatched brackets []");
