@@ -1,7 +1,6 @@
-import {Rule} from "../ParseRule";
-import {Symbol, Token, AbstractSyntaxTree} from "../../common/common.js";
+import {Token, AbstractSyntaxTree} from "../../common/common.js";
 
-import {ParsingTable, TableEntry, ShiftEntry, GotoEntry, ReduceEntry, AcceptEntry} from "./ParsingTable";
+import {ParsingTable, ShiftEntry, ReduceEntry, AcceptEntry} from "./ParsingTable";
 
 /** A table-driven parser implementing the LR parsing algorithm. Parses input in O(N) time */
 export class LRParser {
@@ -13,7 +12,7 @@ export class LRParser {
      * @param {ParsingTable} table the parsing table to use
      */
     constructor(table) {
-        this.table = table;
+        this.#table = table;
     }
 
     /**
@@ -32,7 +31,7 @@ export class LRParser {
     }
 
     startParse() {
-        return new Parse(this);
+        return new Parse(this.#table);
     }
 }
 
@@ -48,9 +47,9 @@ export class Parse {
 
     #finished = false;
 
-    /** @param {LRParser} parser */
-    constructor(parser) {
-        this.#table = parser.table;
+    /** @param {ParsingTable} table */
+    constructor(table) {
+        this.#table = table;
     }
 
     /** @type {Token | AbstractSyntaxTree} */

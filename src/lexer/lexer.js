@@ -6,7 +6,7 @@ import {FSM_ERROR_STATE} from "./fsm/FiniteStateMachine.js";
 
 const lex_rules = `
 COMMENT := (//[^\\n]*|/\\*([^*]|\\*[^/])*?\\*?\\*/)
-STRING-LITERAL := "[^"\\\\]*(\\\\.[^"\\\\]*)*"
+STRING-LITERAL := "([^"\\\\]|\\\\.)*"|'([^'\\\\]|\\\\.)*'
 INT-LITERAL := (0|-?[123456789][\\d]*)
 FLOAT-LITERAL := (0|-?[123456789][\\d]*)(.[\\d]+)?
 BOOL-LITERAL := (true|false)
@@ -16,8 +16,6 @@ using
 from
 as
 
-int
-float
 void
 
 const
@@ -57,8 +55,10 @@ inputln
 
 read
 
+new
 dealloc
 alloc
+sizeof
 
 as
 
@@ -66,6 +66,9 @@ inline
 
 ref
 mut
+
+import 
+export
 
 [
 ]
@@ -118,12 +121,14 @@ mut
 >=
 <
 <=
+!=
+==
+<=>
+
 >>
 >>=
 <<
 <<=
-!=
-==
 
 ::
 

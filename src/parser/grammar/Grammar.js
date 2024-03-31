@@ -189,10 +189,12 @@ export class Grammar {
     }
 
     /**
-     * @param {SymbolString} tkns
+     * @param {SymbolString|Symbol} tkns
      * @returns {ReadonlySet<Symbol>}
      */
     follow(tkns) {
+        if(tkns instanceof Symbol) return this.#followSets.get(tkns);
+
         // Follow set of empty token string is {epsilon}
         if (tkns.size === 0) return new Set([Symbol.__EPSILON__]);
 
@@ -215,10 +217,12 @@ export class Grammar {
     }
 
     /**
-     * @param {SymbolString} tkns
+     * @param {SymbolString|Symbol} tkns
      * @returns {ReadonlySet<Symbol>}
      */
     first(tkns) {
+        if(tkns instanceof Symbol) return this.#followSets.get(tkns);
+
         // Follow set of empty token string is {epsilon}
         if (tkns.size === 0) return new Set([Symbol.__EPSILON__]);
 
