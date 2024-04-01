@@ -1,4 +1,4 @@
-import {Symbol, Token} from "./common";
+import {Symbol, Token} from "./common.js";
 
 /**
  * A class representing an abstract syntax tree
@@ -19,6 +19,7 @@ export class AbstractSyntaxTree {
         this.#children = children;
     }
 
+    /** @type {Symbol} */
     get type() {
         return this.#nodeType;
     }

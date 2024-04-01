@@ -6,9 +6,9 @@ import {FSM_ERROR_STATE} from "./fsm/FiniteStateMachine.js";
 
 const lex_rules = `
 COMMENT := (//[^\\n]*|/\\*([^*]|\\*[^/])*?\\*?\\*/)
-STRING-LITERAL := "[^"\\\\]*(\\\\.[^"\\\\]*)*"
+STRING-LITERAL := "([^"\\\\]|\\\\.)*"|'([^'\\\\]|\\\\.)*'
 INT-LITERAL := (0|-?[123456789][\\d]*)
-FLOAT-LITERAL := (0|-?[123456789][\\d]*)(.[\\d]+)?
+FLOAT-LITERAL := (0|-?[123456789][\\d]*)(\\.[\\d]+)?
 BOOL-LITERAL := (true|false)
 
 module
@@ -16,8 +16,6 @@ using
 from
 as
 
-int
-float
 void
 
 const
@@ -57,8 +55,10 @@ inputln
 
 read
 
+new
 dealloc
 alloc
+sizeof
 
 as
 
@@ -66,6 +66,9 @@ inline
 
 ref
 mut
+
+import 
+export
 
 [
 ]
@@ -118,12 +121,14 @@ mut
 >=
 <
 <=
+!=
+==
+<=>
+
 >>
 >>=
 <<
 <<=
-!=
-==
 
 ::
 
@@ -156,8 +161,9 @@ class Lexer {
 
         while(true) {
             let next = lex.next();
-            if(next.type === Symbol.__END__) break;
             res.push(next);
+
+            if(next.type === Symbol.__EOF___) break;
         }
 
         return res;
@@ -193,7 +199,7 @@ export class Lex {
     /** @returns {Token | null} */
     try_get_next() {
         if (this.done) {
-            return new Token(Symbol.__END__, '', this.#position, this.#position);
+            return new Token(Symbol.__EOF___, '', this.#position, this.#position);
         }
 
         /** @type {Symbol | null} */

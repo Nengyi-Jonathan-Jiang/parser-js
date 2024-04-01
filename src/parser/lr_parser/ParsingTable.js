@@ -1,5 +1,5 @@
-import {Rule} from "../ParseRule";
-import {Symbol} from "../../common/Symbol";
+import {Rule} from "../ParseRule.js";
+import {Symbol} from "../../common/Symbol.js";
 
 export class ParsingTable {
     /** @type {Map<Symbol, TableEntry>[]} */
@@ -74,7 +74,7 @@ export class ParsingTable {
      * @param {number} n
      */
     setGoto(state, symbol, n) {
-        this.#actionTable[state].set(symbol, new GotoEntry(n));
+        this.#gotoTable[state].set(symbol, new GotoEntry(n));
     }
 }
 

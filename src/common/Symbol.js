@@ -51,5 +51,5 @@ export class Symbol {
 
     static __EPSILON__ = Symbol.get('\x00');
     static __START__ = Symbol.get('\x01');
-    static __END__ = Symbol.get('\x02');
+    static __EOF___ = Symbol.get('\x02');
 }

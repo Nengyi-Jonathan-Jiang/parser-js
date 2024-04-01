@@ -5,16 +5,36 @@ import {Symbol} from "../../common/Symbol.js";
  * @extends {Set<Symbol>}
  */
 export class SymbolSet extends Set {
-    #dirty = true;
+    dirty = true;
     #repr = '';
 
+    /** @param {Iterable<Symbol>|null} [values] */
+    constructor(values=null) {
+        super(values);
+    }
+
     #recomputeRepr() {
-        this.#repr = [...this].map(i => i.id).join(' ');
+        this.#repr = [...this].map(i => i.id).toSorted().join(' ');
+    }
+
+    add(value) {
+        this.dirty ||= this.has(value);
+        return super.add(value);
+    }
+
+    delete(value) {
+        return this.dirty ||= super.delete(value);
+    }
+
+    clear() {
+        this.dirty ||= (this.size > 0)
+        super.clear();
     }
 
     toString() {
-        if(this.#dirty) {
+        if(this.dirty) {
             this.#recomputeRepr();
+            this.dirty = false;
         }
         return this.#repr;
     }
