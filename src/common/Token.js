@@ -59,6 +59,13 @@ export class Token {
     
     toString() {
         const {type, value} = this;
-        return type.name === value ? type.name : `${type}<${value}>`
+        return (
+            type === Symbol.__START__ ? '__START__' :
+            type === Symbol.__EOF___ ? '__EOF___' :
+            type === Symbol.__EPSILON__ ? '__EPSILON__' :
+            type.name === value
+                ? type.name
+                : `${type}<${value}>`
+        );
     }
 }

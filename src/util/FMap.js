@@ -66,7 +66,7 @@ export class FMap {
      * @returns {V}
      */
     get(key) {
-        return this.#map.get(this.#f(key))[1];
+        return this.#map.get(this.#f(key))?.[1];
     }
 
     /** @param {K} key */

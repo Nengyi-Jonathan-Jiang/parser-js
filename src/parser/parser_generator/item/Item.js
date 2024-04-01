@@ -63,7 +63,7 @@ export class Item {
             res += this.rule.rhs.get(i);
         }
         if (this.isFinished) res += " ●";
-        res += ` \t${[...this.lookahead].map(i => `"${i}"`).join('/')}`;
+        res += `\t ${[...this.lookahead].map(i => `${i}`).join(' ')}`;
         return res;
     }
 

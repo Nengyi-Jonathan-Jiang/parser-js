@@ -1,11 +1,11 @@
-import {Symbol} from "../../common/Symbol";
-import {Grammar} from "../grammar/Grammar";
-import {ParsingTable} from "../lr_parser/ParsingTable";
+import {Symbol} from "../../common/Symbol.js";
+import {Grammar} from "../grammar/Grammar.js";
+import {ParsingTable} from "../lr_parser/ParsingTable.js";
 
-import {Item} from "./item/Item";
-import {ItemSet} from "./item/ItemSet";
-import {SymbolSet} from "./SymbolSet";
-import {SMap, SSet} from "../../util/FMap";
+import {Item} from "./item/Item.js";
+import {ItemSet} from "./item/ItemSet.js";
+import {SymbolSet} from "./SymbolSet.js";
+import {SMap, SSet} from "../../util/FMap.js";
 
 export class LRParseTableBuilderBase {
     /** @type {ParsingTable} */
@@ -43,7 +43,6 @@ export class LRParseTableBuilderBase {
             this.generateGotoSetEntries(state);
             
             // Debug
-
             console.log("Generated parsing table entries for " + (++i) + " states (currently on state " + state + ")");
         }
     }
@@ -58,8 +57,14 @@ export class LRParseTableBuilderBase {
 
         this.configuratingSets = new SMap;
         this.successors = new Map;
-        
+
+
+        console.log(`Start item is ${this.startItem}`);
+
         const initialState = this.itemClosure(this.startItem);
+
+        console.log(`initial state is ${initialState}`);
+
         this.configuratingSets.set(initialState, 0);
         this.successors.set(0, new Map);
 
@@ -99,14 +104,15 @@ export class LRParseTableBuilderBase {
     addConfiguratingState(state, symbol, successor){
         if(!this.configuratingSets.has(successor)){
             const newState = this.configuratingSets.size;
-            this.successors.put(newState, new Map);
+            this.successors.set(newState, new Map);
             this.configuratingSets.set(successor, newState);
-            this.successors.get(state).put(symbol, newState);
+            this.successors.get(state).set(symbol, newState);
             console.log(`Found ${this.configuratingSets.size}th configurating set (${successor.size} items)`);
             return true;
         }
         else{
             this.successors.get(state).set(symbol, this.configuratingSets.get(successor));
+
             return false;
         }
     }
@@ -119,7 +125,7 @@ export class LRParseTableBuilderBase {
     generateActionSetEntries(state, itemSet){
         for(/** @type {Item} */ const item of itemSet){
             if(item.isFinished && item.rule.toString() === this.grammar.startRule.toString()){
-                this.table.setActionAccept(state, Symbol.__END__);
+                this.table.setActionAccept(state, Symbol.__EOF___);
             }
             else if(item.isFinished){
                 this.generateReductions(state, item);
@@ -185,6 +191,9 @@ export class LRParseTableBuilderBase {
         for(/** @type {Item} */ const item of itemSet)
             for(/** @type {Item} */ const i of this.itemClosure(item))
                 res.add(i);
+
+        res.lock();
+
         return res;
     }
 
@@ -193,9 +202,9 @@ export class LRParseTableBuilderBase {
      */
     successor(itemSet, symbol){
         const res = new ItemSet;
-        for(const item of itemSet)
-            if(!item.isFinished() && item.next().equals(symbol))
-                res.add(item.shift());
+        for(/** @type {Item} */ const item of itemSet)
+            if(!item.isFinished && item.next === symbol)
+                res.add(item.shift);
         return this.closure(res);
     }
 }

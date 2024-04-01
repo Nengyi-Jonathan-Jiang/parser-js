@@ -23,7 +23,7 @@ function addAll(set, elements) {
 
 export class Grammar {
     /** @type {Rule[]} */
-    #rules = [];
+    #rules;
     /** @type {Rule} */
     #startRule;
 
@@ -44,7 +44,7 @@ export class Grammar {
     #followSets = new Map;
 
     /** @type {SMap<SymbolString, Set<Symbol>>} */
-    firstCache = new SMap;
+    #firstCache = new SMap;
     /** @type {SMap<SymbolString, Set<Symbol>>} */
     #followCache = new SMap;
 
@@ -52,7 +52,8 @@ export class Grammar {
      * @param {Rule[]} rules
      * @param {Symbol} startSymbol
      */
-    Grammar(rules, startSymbol) {
+    constructor(rules, startSymbol) {
+        this.#rules = rules;
 
         // Augment the grammar
         this.#startRule = new Rule(Symbol.__START__, new SymbolString(startSymbol), false, true);
@@ -60,9 +61,9 @@ export class Grammar {
 
         // Classify symbols as terminals or nonterminals
 
-        this.#allSymbols.add(SymbolSet.__END__);
-
         this.#allSymbols.add(Symbol.__START__);
+        this.#allSymbols.add(Symbol.__EOF___);
+
         this.#nonTerminals.add(Symbol.__START__);
 
         for (const rule of this.#rules) {
@@ -70,8 +71,9 @@ export class Grammar {
             this.#allSymbols.add(rule.lhs);
 
             addAll(this.#allSymbols, rule.rhs);
-            addAll(this.#terminals, rule.rhs);
         }
+
+        this.#terminals = new Set(this.#allSymbols);
 
         this.#nonTerminals.forEach(i => this.#terminals.delete(i));
 
@@ -85,14 +87,14 @@ export class Grammar {
         //Initialize FIRST sets, FOLLOW sets, nullable set
 
         for (const sym of this.#allSymbols) {
-            this.#firstSets.put(sym, new SymbolSet());
-            this.#followSets.put(sym, new SymbolSet());
+            this.#firstSets.set(sym, new SymbolSet());
+            this.#followSets.set(sym, new SymbolSet());
             if (this.#terminals.has(sym)) {
                 this.#firstSets.get(sym).add(sym);
             }
         }
 
-        this.#followSets.get(Symbol.__START__).add(Symbol.__END__);
+        this.#followSets.get(Symbol.__START__).add(Symbol.__EOF___);
 
         // Calculate FIRST sets, FOLLOW sets, and the set of nullable symbols
 
@@ -105,34 +107,41 @@ export class Grammar {
                 let brk = false;
 
                 for (const sym of rhs) {
-                    updated |= addAll(this.#firstSets.get(lhs), this.#firstSets.get(sym));
+                    updated |= addAll(this.first(lhs), this.first(sym));
 
-                    if (!this.#nullableSymbols.has(sym)) {
+                    if (!this.isNullable(sym)) {
                         brk = true;
                         break;
                     }
                 }
                 if (!brk) {
-                    if(!this.#nullableSymbols.has(lhs)) {
+                    if(!this.isNullable(lhs)) {
                         this.#nullableSymbols.add(lhs);
                         updated = true;
                     }
                 }
 
-                let aux = this.#followSets.get(lhs);
+                let aux = this.follow(lhs);
 
                 for (let i = rhs.size - 1; i >= 0; i--) {
                     if (this.#nonTerminals.has(rhs.get(i))) {
-                        updated |= addAll(this.#followSets.get(rhs.get(i)), aux);
+                        updated |= addAll(this.follow(rhs.get(i)), aux);
                     }
-                    if (this.#nullableSymbols.has(rhs.get(i))) {
+                    if (this.isNullable(rhs.get(i))) {
                         aux = new Set(aux);
-                        addAll(aux, this.#firstSets.get(rhs.get(i)));
-                    } else aux = this.#firstSets.get(rhs.get(i));
+                        addAll(aux, this.first(rhs.get(i)));
+                    } else aux = this.first(rhs.get(i));
                 }
             }
         }
 
+        console.log(`FIRST sets: \n\t${
+            [...this.#firstSets.entries()].map(([a, b]) => `${a.name.padEnd(10, ' ')} := ${[...b].join(' ')}`).join('\n\t')
+        }`)
+
+        console.log(`FOLLOW sets: \n\t${
+            [...this.#followSets.entries()].map(([a, b]) => `${a.name.padEnd(10, ' ')} := ${[...b].join(' ')}`).join('\n\t')
+        }`)
     }
 
     /** @type {ReadonlyArray<Rule>} */
@@ -175,17 +184,18 @@ export class Grammar {
     }
 
     /**
-     * @param {SymbolString} tkns
+     * @param {Symbol|SymbolString} tkns
      * @returns {boolean}
      */
-    isNullable(tkns)
-    {
+    isNullable(tkns) {
+        if(tkns instanceof Symbol) return this.#nullableSymbols.has(tkns);
+
         if (tkns.size === 0) return true;
 
         for (const tkn of tkns)
-            if (this.#nullableSymbols.has(tkn))
-                return true;
-        return false;
+            if (!this.isNullable(tkn))
+                return false;
+        return true;
     }
 
     /**
@@ -202,7 +212,7 @@ export class Grammar {
         if (this.#followCache.has(tkns)) return this.#followCache.get(tkns);
 
         // Otherwise follow set of token string is follow set of last token
-        const res = new Set(this.#followSets.get(tkns.lastTkn));
+        const res = new Set(this.follow(tkns.lastTkn));
 
         // If last token is nullable, then also add the follow set of the rest
         // of the token string
@@ -221,16 +231,16 @@ export class Grammar {
      * @returns {ReadonlySet<Symbol>}
      */
     first(tkns) {
-        if(tkns instanceof Symbol) return this.#followSets.get(tkns);
+        if(tkns instanceof Symbol) return this.#firstSets.get(tkns);
 
         // Follow set of empty token string is {epsilon}
         if (tkns.size === 0) return new Set([Symbol.__EPSILON__]);
 
         // Check result in cache
-        if (this.#followCache.has(tkns)) return this.#followCache.get(tkns);
+        if (this.#firstCache.has(tkns)) return this.#firstCache.get(tkns);
 
         // Otherwise follow set of token string is follow set of last token
-        const res = new Set(this.#followSets.get(tkns.firstTkn));
+        const res = new Set(this.first(tkns.firstTkn));
 
         // If last token is nullable, then also add the follow set of the rest
         // of the token string
@@ -239,7 +249,7 @@ export class Grammar {
         }
 
         // Cache result
-        this.#followCache.set(tkns, res);
+        this.#firstCache.set(tkns, res);
 
         return res;
     }

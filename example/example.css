@@ -12,7 +12,7 @@
 * {
     box-sizing: border-box;
     font-family: "JetBrains Mono", monospace;
-    font-size: 11px;
+    font-size: 13px;
 }
 
 body {
@@ -71,6 +71,10 @@ body {
 
     overflow: auto;
     white-space: pre;
+}
+
+#parse-output, #tokens-output {
+    user-select: none;
 }
 
 #parse-output:empty::before {

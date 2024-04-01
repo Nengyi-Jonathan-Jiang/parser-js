@@ -19,6 +19,7 @@ export class AbstractSyntaxTree {
         this.#children = children;
     }
 
+    /** @type {Symbol} */
     get type() {
         return this.#nodeType;
     }

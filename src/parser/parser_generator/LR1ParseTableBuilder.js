@@ -1,53 +1,57 @@
-import {Rule} from "../ParseRule";
-import {SymbolSet} from "./SymbolSet";
+import {SymbolSet} from "./SymbolSet.js";
+import {Symbol} from "../../common/Symbol.js";
+import {Grammar} from "../grammar/Grammar.js";
+import {Item} from "./item/Item.js";
+import {ItemSet} from "./item/ItemSet.js";
+import {LRParseTableBuilderBase} from "./LRParseTableBuilderBase.js";
+import {SMap} from "../../util/FMap.js";
 
-import frontend.parser.Rule;
-import frontend.Symbol;
-import frontend.parser.SymbolString;
-import frontend.grammar.Grammar;
-import frontend.parser.parser_generator.item.Item;
-import frontend.parser.parser_generator.item.ItemSet;
+export class LR1ParseTableBuilder extends LRParseTableBuilderBase {
+    /** @type {SMap<Item, ItemSet>} */
+    memoization = new SMap;
 
-public class LR1ParseTableBuilder extends LRParseTableBuilderBase {
-    protected Cache<Item, ItemSet> memoization;
-
-    public LR1ParseTableBuilder(Grammar grammar){
+    /** @param {Grammar} grammar */
+    constructor(grammar){
         super(grammar);
     }
 
-    protected ItemSet closure(Item item){
-        if(memoization == null) memoization = new CompareCache<>();
-
+    /**
+     * @param {Item} item
+     * @returns {ItemSet}
+     */
+    itemClosure(item){
         {
-            var cachedRes = memoization.get(item);
+            if(!this.memoization) this.memoization = new SMap;
+            const cachedRes = this.memoization.get(item);
             if(cachedRes != null) return cachedRes;
         }
 
-        ItemSet res = new ItemSet(item);
+        const res = new ItemSet(item);
 
-        if(item.isFinished()) return res;
+        if(item.isFinished) return res;
         
-        ItemSet edge = res.copy();
+        let edge = res.copy();
         
-        boolean updated = true;
+        let updated = true;
         while(updated){
             updated = false;
 
-            ItemSet newEdge = new ItemSet();
+            const newEdge = new ItemSet;
             
-            for(Item itm : edge){
+            for(/** @type {Item} */ const itm of edge){
+                const symbol = itm.next;
 
-                Symbol symbol = itm.next();
+                if(itm.isFinished || !this.grammar.nonTerminals.has(symbol)) continue;
 
-                if(itm.isFinished() || !grammar.isNonTerminal(symbol)) continue;
+                const rest = itm.rule.rhs.substring(itm.pos + 1);
 
-                SymbolString rest = itm.getRule().getRhs().substring(itm.getPos() + 1);
+                for(const r of this.grammar.getRules(symbol)){
+                    for(/** @type {Symbol} */ const lookahead of itm.lookahead){
+                        const newItem = new Item(r, 0, new SymbolSet(this.grammar.first(rest.concat(lookahead))));
 
-                for(Rule r : grammar.getRules(symbol)){
-                    for(Symbol lookahead : itm.getLookahead()){
-                        Item newItem = new Item(r, 0, grammar.first(rest.concat(lookahead)));
+                        updated ||= !res.has(newItem);
 
-                        updated |= res.add(newItem);
+                        res.add(newItem);
                         newEdge.add(newItem);
                     }
                 }
@@ -56,7 +60,9 @@ public class LR1ParseTableBuilder extends LRParseTableBuilderBase {
             edge = newEdge;
         }
 
-        memoization.cache(item, res);
+        res.lock();
+
+        this.memoization.set(item, res);
 
         return res;
     }

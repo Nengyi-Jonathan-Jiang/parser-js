@@ -53,6 +53,10 @@ export class Rule {
     }
 
     toString() {
-        return this.lhs + " := " + this.rhs;
+        return `${
+            this.unwrap ? '' : '__WRAP__ '
+        }${
+            this.chained ? '__CHAIN__ ' : ''
+        }${this.lhs} := ${this.rhs}`;
     }
 }

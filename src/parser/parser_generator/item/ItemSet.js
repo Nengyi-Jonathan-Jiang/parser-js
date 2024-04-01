@@ -1,5 +1,5 @@
-import {Item} from "./Item";
-import {SSet} from "../../../util/FMap";
+import {Item} from "./Item.js";
+import {SSet} from "../../../util/FMap.js";
 
 /**
  * @extends SSet<Item>

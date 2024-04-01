@@ -1,6 +1,6 @@
 import {Token, AbstractSyntaxTree} from "../../common/common.js";
 
-import {ParsingTable, ShiftEntry, ReduceEntry, AcceptEntry} from "./ParsingTable";
+import {ParsingTable, ShiftEntry, ReduceEntry, AcceptEntry} from "./ParsingTable.js";
 
 /** A table-driven parser implementing the LR parsing algorithm. Parses input in O(N) time */
 export class LRParser {
@@ -21,22 +21,24 @@ export class LRParser {
      * @return {AbstractSyntaxTree} The parse tree if the tokens were parsed successfully, otherwise null
      */
     parseTokens(tokens) {
-        /** @type {Parse}*/
+        /** @type {LRParse}*/
         const p = this.startParse();
         for (const token of tokens) {
             p.process(token);
         }
-        if (!p.isFinished) return null;
+        if(!p.isFinished) {
+            throw new Error('Invalid parse');
+        }
         return p.result;
     }
 
     startParse() {
-        return new Parse(this.#table);
+        return new LRParse(this.#table);
     }
 }
 
 
-export class Parse {
+export class LRParse {
     #stateStack = [0];
 
     /** @type {(Token | AbstractSyntaxTree)[]} */
@@ -70,21 +72,28 @@ export class Parse {
 
             const entry = this.#table.getAction(state, token.type);
 
-            // Parse failed
+            // LRParse failed
             if (entry == null) {
                 throw new Error(`Parse failed: expected one of ${[...this.#table.acceptableSymbolsAtState(state)].join(', ')}, instead got ${token}`);
             }
 
             if (entry instanceof ShiftEntry) {
                 this.#stateStack.push(entry.nextState);
-                this.#parseTreeNodeStack.push(token)
+                this.#parseTreeNodeStack.push(token);
+
+                // console.log(`SHIFT state ${entry.nextState} on ${token} `);
+
                 return;
             } else if (entry instanceof AcceptEntry) {
+                // console.log(`ACCEPT on ${token} `);
+
                 this.#finished = true;
                 return;
             } else if (entry instanceof ReduceEntry) {
                 const reduceRule = entry.rule;
                 const lhs = reduceRule.lhs;
+
+                // console.log(`ACCEPT by ${entry.rule} on ${token} `);
 
                 // Update state stack
                 for (let j = 0; j < reduceRule.rhs.size; j++) {

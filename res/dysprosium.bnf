@@ -1,0 +1,156 @@
+program __EPSILON__
+__CHAIN__ program := program file
+
+file := module-declaration imports statements
+module-declaration := module module-name ;
+
+__WRAP__ module-name := IDENTIFIER
+__CHAIN__ module-name := module-name . IDENTIFIER
+
+imports __EPSILON__
+__CHAIN__ imports := imports import
+
+import := using import-clause ;
+
+import-clause := module-import-clause
+import-clause := aliased-module-import-clause
+import-clause := wildcard-import-clause
+import-clause := specific-import-clause
+
+module-import-clause := module-name
+aliased-module-import-clause := module-name as module-name
+wildcard-import-clause := * from module-name
+specific-import-clause := { import-list } from module-name
+
+__WRAP__ import-list := specific-import
+__CHAIN__ import-list := import-list , specific-import
+
+specific-import := simple-specific-import
+specific-import := aliased-specific-import
+
+simple-specific-import := IDENTIFIER
+aliased-specific-import := IDENTIFIER as IDENTIFIER
+
+statements __EPSILON__
+__CHAIN__ statements := statements statement
+
+__DUMMY__ __EPSILON__
+
+statement := print-statement
+statement := block-statement
+statement := return-statement
+statement := expression-statement
+statement := function-definition
+statement := decl-statement
+statement := if-statement
+statement := if-else-statement
+statement := loop
+statement := loop-else
+statement := loop-exit-statement
+statement := nothing-statement
+
+nothing-statement := nothing ;
+
+if-else-statement := if-statement else-clause
+
+if-statement := if ( expr ) statement
+else-clause := else statement
+
+loop-exit := break
+loop-exit := continue
+loop-exit-statement := loop-exit ;
+loop-exit-statement := loop-exit INT-LITERAL ;
+
+loop-else := loop else-clause
+
+loop := while-loop
+loop := until-loop
+loop := for-loop
+loop := foreach-loop
+
+while-loop := while ( expr ) loop-body
+until-loop := until ( expr ) loop-body
+
+loop-body := statement __DUMMY__
+
+for-loop := for ( decl-statement expr ; expr ) statement
+foreach-loop := foreach ( type IDENTIFIER : expr ) statement
+
+expression-statement := expr ;
+return-statement := return expr ;
+block-statement := { statements }
+
+print-statement := print expr ;
+print-statement := println expr ;
+print-statement := print STRING-LITERAL ;
+print-statement := println STRING-LITERAL ;
+
+decl-statement := type IDENTIFIER = assignment-expr ;
+
+expr := assignment-expr
+
+assignment-op := =
+assignment-op := +=
+assignment-op := -=
+assignment-op := *=
+assignment-op := /=
+assignment-op := %=
+assignment-expr := compare-expr
+assignment-expr := IDENTIFIER assignment-op assignment-expr
+
+compare-op := <=
+compare-op := <
+compare-op := >=
+compare-op := >
+compare-op := ==
+compare-op := !=
+compare-expr := add-expr
+compare-expr := compare-expr compare-op add-expr
+
+add-op := +
+add-op := -
+add-expr := mult-expr
+add-expr := add-expr add-op mult-expr
+
+mult-op := *
+mult-op := /
+mult-op := %
+mult-expr := postfix-expr
+mult-expr := mult-expr mult-op postfix-expr
+
+postfix-expr := primary-expr
+postfix-expr := postfix-expr postfix-op
+postfix-expr := call-expr
+postfix-expr := index-expr
+
+postfix-op := --
+postfix-op := ++
+
+call-expr := postfix-expr ( )
+call-expr := postfix-expr ( argument-list )
+index-expr := postfix-expr [ argument-list ]
+argument-list := expr
+__CHAIN__ argument-list := argument-list , argument
+__WRAP__ argument-list := argument
+__WRAP__ argument := expr
+
+
+primary-expr := INT-LITERAL
+primary-expr := FLOAT-LITERAL
+primary-expr := IDENTIFIER
+primary-expr := ( expr )
+primary-expr := input-expr
+
+input-expr := input type
+
+function-definition := func IDENTIFIER parameter-list -> return type expr ;
+function-definition := func IDENTIFIER parameter-list -> type block-statement
+parameter-list := ( )
+parameter-list := ( parameters )
+__WRAP__ parameters := parameter
+__CHAIN__ parameters := parameters , parameter
+parameter := type IDENTIFIER
+parameter := ref type IDENTIFIER
+parameter := mut type IDENTIFIER
+
+type := IDENTIFIER
