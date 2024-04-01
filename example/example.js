@@ -31,6 +31,9 @@ function create_token_el(token) {
  */
 function update_tokens(string, tokens) {
 
+    tokens = [...tokens];
+    tokens.pop()
+
     let lastEndIndex = 0;
     for(const token of tokens) {
         const {startIndex, endIndex} = token;
