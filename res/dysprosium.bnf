@@ -48,6 +48,10 @@ statement := loop
 statement := loop-else
 statement := loop-exit-statement
 statement := nothing-statement
+statement := export-statement
+
+export-statement := export function-definition
+export-statement := export decl-statement
 
 nothing-statement := nothing ;
 

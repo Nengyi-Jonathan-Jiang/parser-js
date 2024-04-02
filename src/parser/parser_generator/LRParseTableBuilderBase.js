@@ -41,9 +41,6 @@ export class LRParseTableBuilderBase {
 
             // Generate Goto table
             this.generateGotoSetEntries(state);
-            
-            // Debug
-            console.log("Generated parsing table entries for " + (++i) + " states (currently on state " + state + ")");
         }
     }
 

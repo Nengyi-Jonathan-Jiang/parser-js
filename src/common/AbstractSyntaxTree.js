@@ -2,6 +2,8 @@ import {Symbol, Token} from "./common.js";
 
 /**
  * A class representing an abstract syntax tree
+ *
+ * @implements {Iterable<AbstractSyntaxTree|Token>}
  */
 export class AbstractSyntaxTree {
     /** @type {Symbol} */
@@ -30,5 +32,10 @@ export class AbstractSyntaxTree {
      */
     get children(){
         return this.#children;
+    }
+
+    /** @returns {IterableIterator<AbstractSyntaxTree|Token>} */
+    [window.Symbol.iterator]() {
+        return this.#children[window.Symbol.iterator]();
     }
 }

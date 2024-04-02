@@ -1,6 +1,7 @@
 import {Token, Symbol} from '../src/common/common.js';
 import dysprosiumLexer from "../src/lexer/lexer.js";
 import {dysprosiumParser} from "../src/parser/Parser.js";
+import {analyzeDysprosium} from "../src/dysprosium/SemanticAnalyzer.js";
 
 /** @type {HTMLTextAreaElement} */
 const code_input = document.getElementById('code-input');
@@ -96,13 +97,17 @@ code_input.oninput = _ => {
 
     update_tokens(input, tokens);
 
+    let parseTree;
+
     try {
-        const parseTree = dysprosiumParser.parseTokens(tokens);
+        parseTree = dysprosiumParser.parseTokens(tokens);
         update_parse_tree(parseTree);
     }
     catch (e) {
         parse_output.innerText = e.message;
     }
+
+    analyzeDysprosium(parseTree);
 }
 
 code_input.oninput(null);

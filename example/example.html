@@ -16,15 +16,15 @@
 			<div id="left">
 				<div id="code-input-container">
 					<label><textarea spellcheck="false" id="code-input" placeholder="Enter code here...">
-module fibonacci;
+module fibonacci.implementation;
 
-func fibonacci(int x) -> int {
+export func fibonacci(int x) -> int {
     if(x < 2) return 1;
     else return fibonacci(x - 1) + fibonacci(x - 2);
 }
 
 module main;
-using {fibonacci} from fibonacci;
+using {fibonacci} from fibonacci.implementation;
 
 print fibonacci(2);</textarea></label>
 				</div>
