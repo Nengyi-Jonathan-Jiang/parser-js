@@ -137,7 +137,9 @@ export
 
 ->
 
-IDENTIFIER := #?[\\l_]\\w*
+#
+
+IDENTIFIER := [\\l_]\\w*
 `.trim().split(/\s*\n\s*/g).filter(i => !i.startsWith('//')).map(i => i.split(':=')).map(([a, b]) => {
     return {nfa: Regex.parse(
         b?.trim() ?? a.trim().replaceAll(/[()[+*?.\]]/g, '\\$&')

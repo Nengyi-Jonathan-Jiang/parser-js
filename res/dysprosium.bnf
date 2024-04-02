@@ -59,6 +59,16 @@ export-statement := export declaration
 
 nothing-statement := nothing ;
 
+type := non-void-type
+type := void
+
+__WRAP__ raw-type := IDENTIFIER
+raw-type := raw-type [ template-params ]
+template-params := type
+__CHAIN__ template-params := template-params , type
+non-void-type := raw-type
+non-void-type := # non-void-type
+
 if-else-statement := if-statement else-clause
 
 if-statement := if ( expr ) statement
@@ -172,9 +182,3 @@ __WRAP__ parameters := parameter
 __CHAIN__ parameters := parameters , parameter
 parameter := non-void-type IDENTIFIER
 parameter := ref non-void-type IDENTIFIER
-
-type := non-void-type
-type := void
-
-__WRAP__ non-void-type := IDENTIFIER
-non-void-type := non-void-type [ ]
