@@ -16,6 +16,8 @@ using
 from
 as
 
+constructor
+
 void
 
 const
@@ -64,8 +66,8 @@ as
 
 inline
 
-ref
-mut
+var
+const
 
 import 
 export
@@ -116,6 +118,9 @@ export
 |=
 ||
 ||=
+
+<:
+:>
 
 >
 >=

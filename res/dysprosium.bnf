@@ -63,7 +63,8 @@ type := non-void-type
 type := void
 
 __WRAP__ raw-type := IDENTIFIER
-raw-type := raw-type [ template-params ]
+raw-type := template
+template := raw-type < template-params >
 template-params := type
 __CHAIN__ template-params := template-params , type
 non-void-type := raw-type
@@ -92,7 +93,6 @@ until-loop := until ( expr ) loop-body
 loop-body := statement __DUMMY__
 
 for-loop := for ( variable-initialization expr ; expr ) statement
-foreach-loop := foreach ( type IDENTIFIER : expr ) statement
 
 expression-statement := expr ;
 return-statement := return expr ;
@@ -103,8 +103,10 @@ print-statement := println expr ;
 print-statement := print STRING-LITERAL ;
 print-statement := println STRING-LITERAL ;
 
-variable-initialization := non-void-type IDENTIFIER = assignment-expr ;
-variable-declaration := non-void-type IDENTIFIER ;
+variable-initialization := const IDENTIFIER : non-void-type = expr ;
+variable-declaration := const IDENTIFIER  : non-void-type ;
+variable-initialization := var IDENTIFIER : non-void-type = expr ;
+variable-declaration := var IDENTIFIER  : non-void-type ;
 
 class-declaration := class IDENTIFIER { class-body }
 
@@ -113,46 +115,38 @@ class-body __EPSILON__
 
 class-body-statement := visibility-modifier declaration
 class-body-statement := visibility-modifier static declaration
+class-body-statement := constructor parameter-list block-statement
 
 visibility-modifier := public
 visibility-modifier := private
 visibility-modifier := protected
 
-expr := assignment-expr
+op := =
+op := +=
+op := -=
+op := *=
+op := /=
+op := %=
+op := <=
+op := <
+op := >=
+op := >
+op := ==
+op := !=
+op := +
+op := -
+op := *
+op := /
+op := %
 
-assignment-op := =
-assignment-op := +=
-assignment-op := -=
-assignment-op := *=
-assignment-op := /=
-assignment-op := %=
-assignment-expr := compare-expr
-assignment-expr := IDENTIFIER assignment-op assignment-expr
-
-compare-op := <=
-compare-op := <
-compare-op := >=
-compare-op := >
-compare-op := ==
-compare-op := !=
-compare-expr := add-expr
-compare-expr := compare-expr compare-op add-expr
-
-add-op := +
-add-op := -
-add-expr := mult-expr
-add-expr := add-expr add-op mult-expr
-
-mult-op := *
-mult-op := /
-mult-op := %
-mult-expr := postfix-expr
-mult-expr := mult-expr mult-op postfix-expr
+expr := postfix-expr
+__CHAIN__ expr := expr op postfix-expr
 
 postfix-expr := primary-expr
 postfix-expr := postfix-expr postfix-op
 postfix-expr := call-expr
 postfix-expr := index-expr
+postfix-expr := access-expr
 
 postfix-op := --
 postfix-op := ++
@@ -165,20 +159,28 @@ __CHAIN__ argument-list := argument-list , argument
 __WRAP__ argument-list := argument
 __WRAP__ argument := expr
 
+access-expr := postfix-expr . IDENTIFIER
 
 primary-expr := INT-LITERAL
 primary-expr := FLOAT-LITERAL
 primary-expr := IDENTIFIER
 primary-expr := ( expr )
 primary-expr := input-expr
+primary-expr := new-expr
+
+new-expr := new IDENTIFIER ( argument-list )
 
 input-expr := input type
 
-function-declaration := func type parameter-list -> return type expr ;
-function-declaration := func type parameter-list -> type block-statement
+function-declaration := func IDENTIFIER parameter-list -> return type expr ;
+function-declaration := func IDENTIFIER parameter-list -> type block-statement
 parameter-list := ( )
 parameter-list := ( parameters )
+
 __WRAP__ parameters := parameter
 __CHAIN__ parameters := parameters , parameter
-parameter := non-void-type IDENTIFIER
-parameter := ref non-void-type IDENTIFIER
+
+parameter := IDENTIFIER : non-void-type
+parameter := & IDENTIFIER : non-void-type
+parameter := var IDENTIFIER : non-void-type
+parameter := var & IDENTIFIER : non-void-type

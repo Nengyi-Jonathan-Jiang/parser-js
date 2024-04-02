@@ -1,0 +1,57 @@
+<!doctype HTML>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport"
+			  content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>Title</title>
+
+		<link rel="stylesheet" type="text/css" href="style.css">
+		<link rel="stylesheet" type="text/css" href="tokens-output.css">
+		<link rel="stylesheet" type="text/css" href="parse-output.css">
+	</head>
+	<body>
+		<div id="content">
+			<div id="left">
+				<div id="code-input-container">
+					<label><textarea spellcheck="false" id="code-input" placeholder="Enter code here...">
+module robot;
+
+using {Timer} from std.time;
+using {Color} from std.color;
+using {RobotBase} from jRobotics;
+
+export const TEAM_NUMBER : int = 4639;
+
+export class Robot {
+    private const ledStrip : LEDStrip;
+
+    constructor(ledStripPort : int){
+        this.ledStrip = new LEDStrip(ledStripPort);
+    }
+
+    public func periodic() -> void {
+        const currentTime : float = Timer.getTimer().getTime();
+
+        const color: Color = Color.fromHSV(0, 0, 0);
+    }
+}
+
+
+module main;
+using {RobotRunner} from jRobotics;
+using {Robot} from robot;
+
+RobotRunner.runRobot(Robot);</textarea></label>
+				</div>
+				<div id="tokens-output"></div>
+			</div>
+			<div id="right">
+				<div id="parse-output"></div>
+			</div>
+		</div>
+
+		<script src="script.js" type="module"></script>
+	</body>
+</html>
