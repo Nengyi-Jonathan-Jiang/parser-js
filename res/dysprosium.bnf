@@ -93,8 +93,8 @@ print-statement := println expr ;
 print-statement := print STRING-LITERAL ;
 print-statement := println STRING-LITERAL ;
 
-variable-initialization := type IDENTIFIER = assignment-expr ;
-variable-declaration := type IDENTIFIER ;
+variable-initialization := non-void-type IDENTIFIER = assignment-expr ;
+variable-declaration := non-void-type IDENTIFIER ;
 
 class-declaration := class IDENTIFIER { class-body }
 
@@ -170,8 +170,11 @@ parameter-list := ( )
 parameter-list := ( parameters )
 __WRAP__ parameters := parameter
 __CHAIN__ parameters := parameters , parameter
-parameter := type IDENTIFIER
-parameter := ref type IDENTIFIER
+parameter := non-void-type IDENTIFIER
+parameter := ref non-void-type IDENTIFIER
 
-__WRAP__ type := IDENTIFIER
-type := type [ ]
+type := non-void-type
+type := void
+
+__WRAP__ non-void-type := IDENTIFIER
+non-void-type := non-void-type [ ]
