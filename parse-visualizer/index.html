@@ -27,7 +27,7 @@ export const TEAM_NUMBER : int = 4639;
 export class Robot {
     private const ledStrip : LEDStrip;
 
-    constructor(ledStripPort : int){
+    public constructor(ledStripPort : int){
         this.ledStrip = new LEDStrip(ledStripPort);
     }
 

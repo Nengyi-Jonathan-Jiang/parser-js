@@ -114,8 +114,8 @@ __CHAIN__ class-body := class-body class-body-statement
 class-body __EPSILON__
 
 class-body-statement := visibility-modifier declaration
+class-body-statement := visibility-modifier constructor-declaration
 class-body-statement := visibility-modifier static declaration
-class-body-statement := constructor parameter-list block-statement
 
 visibility-modifier := public
 visibility-modifier := private
@@ -140,6 +140,7 @@ op := /
 op := %
 
 expr := postfix-expr
+
 __CHAIN__ expr := expr op postfix-expr
 
 postfix-expr := primary-expr
@@ -171,6 +172,8 @@ primary-expr := new-expr
 new-expr := new IDENTIFIER ( argument-list )
 
 input-expr := input type
+
+constructor-declaration := constructor parameter-list block-statement
 
 function-declaration := func IDENTIFIER parameter-list -> return type expr ;
 function-declaration := func IDENTIFIER parameter-list -> type block-statement

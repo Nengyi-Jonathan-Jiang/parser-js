@@ -1,5 +1,5 @@
-import {AbstractSyntaxTree} from "../common/AbstractSyntaxTree.js";
-import {Symbol, Token} from "../common/common.js";
+import {AbstractSyntaxTree} from "../language/common/AbstractSyntaxTree.js";
+import {Symbol, Token} from "../language/common/common.js";
 
 class FirstPassModuleInfo {
     /** @type {string} */
@@ -11,7 +11,7 @@ class FirstPassModuleInfo {
 }
 
 /** @param {AbstractSyntaxTree} parseTree */
-export function analyzeDysprosium(parseTree) {
+export function dysprosiumAnalyzer(parseTree) {
     // Top level MUST be "program"
     console.assert(parseTree.type === Symbol.get('program'));
 

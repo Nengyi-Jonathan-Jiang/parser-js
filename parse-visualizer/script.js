@@ -1,7 +1,8 @@
-import {Token, Symbol} from '../src/common/common.js';
-import dysprosiumLexer from "../src/lexer/lexer.js";
-import {dysprosiumParser} from "../src/parser/Parser.js";
-import {analyzeDysprosium} from "../src/dysprosium/SemanticAnalyzer.js";
+import {Token, Symbol} from '../src/language/common/common.js';
+
+import {dysprosiumParser} from "../src/dysprosium/Parser.js";
+import {dysprosiumLexer} from "../src/dysprosium/Lexer.js";
+import {dysprosiumAnalyzer} from "../src/dysprosium/SemanticAnalyzer.js";
 
 /** @type {HTMLTextAreaElement} */
 const code_input = document.getElementById('code-input');
@@ -102,12 +103,31 @@ code_input.oninput = _ => {
     try {
         parseTree = dysprosiumParser.parseTokens(tokens);
         update_parse_tree(parseTree);
+
+        dysprosiumAnalyzer(parseTree);
     }
     catch (e) {
         parse_output.innerText = e.message;
     }
+}
 
-    analyzeDysprosium(parseTree);
+function analyze() {
+    const input = code_input.value;
+    const tokens = dysprosiumLexer.lex(input);
+    const parseTree = dysprosiumParser.parseTokens(tokens);
+    dysprosiumAnalyzer(parseTree);
+}
+
+window.onkeydown = e => {
+    if(e.ctrlKey && e.key === 's') {
+        e.preventDefault();
+        try {
+            analyze();
+        }
+        catch (e) {
+            alert(e.message);
+        }
+    }
 }
 
 code_input.oninput(null);
