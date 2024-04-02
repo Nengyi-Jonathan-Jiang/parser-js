@@ -19,8 +19,18 @@
 module fibonacci.implementation;
 
 export func fibonacci(int x) -> int {
-    if(x < 2) return 1;
-    else return fibonacci(x - 1) + fibonacci(x - 2);
+    return nbonacci(x, 2);
+}
+
+export func nbonacci(int x, int n) -> int {
+    if(x < n) return 1;
+    else {
+        int result = 0;
+        for(int i = 1; i <= n; i++) {
+            result += nbonacci(x - i, n);
+        }
+        return result;
+    }
 }
 
 module main;

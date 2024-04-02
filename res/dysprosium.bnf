@@ -40,8 +40,8 @@ statement := print-statement
 statement := block-statement
 statement := return-statement
 statement := expression-statement
-statement := function-definition
-statement := decl-statement
+statement := declaration
+statement := class-declaration
 statement := if-statement
 statement := if-else-statement
 statement := loop
@@ -50,8 +50,12 @@ statement := loop-exit-statement
 statement := nothing-statement
 statement := export-statement
 
-export-statement := export function-definition
-export-statement := export decl-statement
+declaration := function-declaration
+declaration := variable-declaration
+declaration := variable-initialization
+declaration := class-declaration
+
+export-statement := export declaration
 
 nothing-statement := nothing ;
 
@@ -77,7 +81,7 @@ until-loop := until ( expr ) loop-body
 
 loop-body := statement __DUMMY__
 
-for-loop := for ( decl-statement expr ; expr ) statement
+for-loop := for ( variable-initialization expr ; expr ) statement
 foreach-loop := foreach ( type IDENTIFIER : expr ) statement
 
 expression-statement := expr ;
@@ -89,7 +93,20 @@ print-statement := println expr ;
 print-statement := print STRING-LITERAL ;
 print-statement := println STRING-LITERAL ;
 
-decl-statement := type IDENTIFIER = assignment-expr ;
+variable-initialization := type IDENTIFIER = assignment-expr ;
+variable-declaration := type IDENTIFIER ;
+
+class-declaration := class IDENTIFIER { class-body }
+
+__CHAIN__ class-body := class-body class-body-statement
+class-body __EPSILON__
+
+class-body-statement := visibility-modifier declaration
+class-body-statement := visibility-modifier static declaration
+
+visibility-modifier := public
+visibility-modifier := private
+visibility-modifier := protected
 
 expr := assignment-expr
 
@@ -147,14 +164,14 @@ primary-expr := input-expr
 
 input-expr := input type
 
-function-definition := func IDENTIFIER parameter-list -> return type expr ;
-function-definition := func IDENTIFIER parameter-list -> type block-statement
+function-declaration := func type parameter-list -> return type expr ;
+function-declaration := func type parameter-list -> type block-statement
 parameter-list := ( )
 parameter-list := ( parameters )
 __WRAP__ parameters := parameter
 __CHAIN__ parameters := parameters , parameter
 parameter := type IDENTIFIER
 parameter := ref type IDENTIFIER
-parameter := mut type IDENTIFIER
 
-type := IDENTIFIER
+__WRAP__ type := IDENTIFIER
+type := type [ ]

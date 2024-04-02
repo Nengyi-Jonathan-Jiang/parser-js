@@ -15,7 +15,7 @@ export function analyzeDysprosium(parseTree) {
     // Top level MUST be "program"
     console.assert(parseTree.type === Symbol.get('program'));
 
-    /** @type {Map<string, FirstPassModuleInfo>} */
+    /** @type {Map<string, Map<string, "var"|"func"|"class">>} */
     const first_pass_info = new Map;
 
     // Resolve exports (functions, variables, classes)
