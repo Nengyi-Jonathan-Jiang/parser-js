@@ -1,0 +1,40 @@
+// Data goes onto the stack before everything else
+// Stack is addressed by positive numbers
+// Null pointer (0) is disallowed
+// Allocations are done on heap (addressed by negative numbers)
+// All code must be in one file -- no libraries at the asm level
+// Due to lazy, all chars are actually int-sized (4 bytes)
+// Which gives room for formatting (RGB fg and bg, 4 bits each)
+
+// Encoding:
+// Most operations are encoded as 4 bytes
+//     [opcode * 5] [deref o] [deref x] [deref y]
+//     [o register * 4] [jump cond * 3] [-]
+//     [x register * 4] [y register * 4]
+//     [--------]
+
+// Load operation (load a literal) is encoded as 8 bytes
+//     [0 0 0 0 0] [deref o] [--]
+//     [o register * 4] [jump cond * 3] [-]
+//     [--------]
+//     [--------]
+//     [data * 32]
+
+// Mov operation (two operands) is encoded as 4 bytes
+//     [0 0 0 0 1] [deref o] [deref i] [-]
+//     [----] [jump cond * 3] [-]
+//     [o register * 4] [i register * 4]
+//     [--------]
+
+// New and delete
+//     [0 1] [new/delete] [deref a] [a register * 4]
+//     [size * 24]
+
+// Where x, y can be values (8 bit), @ values, registers, or @ registers. o must be
+// an @ value, register, or @ register.
+
+// On special opcode mov,
+
+// Commands syntax:
+// mov:
+//     [@] reg <- ( [@] ( label | reg ) | number )

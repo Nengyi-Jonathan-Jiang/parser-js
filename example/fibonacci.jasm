@@ -1,0 +1,20 @@
+
+jmp PROGRAM_START ucd;
+
+HELLO_WORLD_TEXT:
+    "Hello World"
+
+THE_NUMBERS:
+    310i
+    2.71828f
+    #00 #00 #01 #08
+
+PROGRAM_START:
+    r1 <- HELLO_WORLD_TEXT ;
+
+LOOP_START:
+    r2 <- @ r1;
+    jmp ==0;
+    dsp r2
+    r1 <- add r1 1
+LOOP_END:
