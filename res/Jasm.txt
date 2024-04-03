@@ -1,40 +1,69 @@
-// Data goes onto the stack before everything else
-// Stack is addressed by positive numbers
-// Null pointer (0) is disallowed
-// Allocations are done on heap (addressed by negative numbers)
-// All code must be in one file -- no libraries at the asm level
-// Due to lazy, all chars are actually int-sized (4 bytes)
-// Which gives room for formatting (RGB fg and bg, 4 bits each)
+Data goes onto the stack before everything else
+Stack is addressed by positive numbers
+Null pointer (0) is disallowed
+Allocations are done on heap (addressed by negative numbers)
+All code must be in one file -- no libraries at the asm level
+Due to me being lazy, all chars are actually int-sized (4 bytes)
+Which gives room for cool formatting instructions
+As in: [char * 8] [fg * 6][bold][italic] [bg * 6] [top bottom] [border * 6] [left right]
 
-// Encoding:
-// Most operations are encoded as 4 bytes
-//     [opcode * 5] [deref o] [deref x] [deref y]
-//     [o register * 4] [jump cond * 3] [-]
-//     [x register * 4] [y register * 4]
-//     [--------]
+Normal opcodes:
+    100000 add
+    100001 fadd
+    100010 sub
+    100011 fsub
+    100100 mul
+    100101 fmul
+    100110 div
+    100111 fdiv
 
-// Load operation (load a literal) is encoded as 8 bytes
-//     [0 0 0 0 0] [deref o] [--]
-//     [o register * 4] [jump cond * 3] [-]
-//     [--------]
-//     [--------]
-//     [data * 32]
+    101000 mod
+    101001 fmod
 
-// Mov operation (two operands) is encoded as 4 bytes
-//     [0 0 0 0 1] [deref o] [deref i] [-]
-//     [----] [jump cond * 3] [-]
-//     [o register * 4] [i register * 4]
-//     [--------]
+    101010 or
+    101011 and
+    101100 xor
+    101101 shl
+    101110 shr
 
-// New and delete
-//     [0 1] [new/delete] [deref a] [a register * 4]
-//     [size * 24]
+Encoding:
+Most operations are encoded as 4 bytes
+    [opcode * 6] [deref x] [deref y]
+    [o register * 4] [jump cond * 3] [deref o]
+    [x register * 4] [y register * 4]
+    [--------]
 
-// Where x, y can be values (8 bit), @ values, registers, or @ registers. o must be
-// an @ value, register, or @ register.
+Load operation (load a literal) is encoded as 8 bytes
+    [0 0 0 0 0 0] [--]
+    [o register * 4] [jump cond * 3] [deref o]
+    [--------]
+    [--------]
+    [data * 32]
 
-// On special opcode mov,
+Mov operation (two operands) is encoded as 4 bytes
+    [0 0 0 0 0 1] [deref i] [-]
+    [o register * 4] [jump cond * 3]  [deref o]
+    [i register * 4] [----]
+    [--------]
 
-// Commands syntax:
-// mov:
-//     [@] reg <- ( [@] ( label | reg ) | number )
+inpi, inpf, inpc, dspi, dspf, dspc are encoded as 4 bytes (0000)
+    [0 0 1] [ifc * 2] [deref]
+
+Spare: [0 0 u v w]
+
+f2i and i2f are encoded as 4 bytes (take up 4 opcodes)
+    [0 1 0] [f2i/i2f] [deref] [i register * 3 (no sp, sb, ip)]
+    [--------]
+
+New and delete are encoded as 4 bytes (take up 4 opcodes)
+    [0 1 1] [new/delete] [deref a] [a register * 3 (no sp, sb, ip)]
+    [size * 24]
+
+Where x, y can be values (8 bit), @ values, registers, or @ registers. o must be
+an @ value, register, or @ register.
+
+On special opcode mov,
+
+Commands syntax:
+mov:
+    [@] reg <- ( [@] ( label | reg ) | number )
