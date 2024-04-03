@@ -3,15 +3,20 @@ register := r[12345678]|sp|sb
 text := "([^"\\]|\\.)*"
 iconst := (0|-?[123456789][\d]*)i
 fconst := ((0|-?[123456789]\d*)(\.\d+)?|\.\d+)f
+
 label_name := [A-Z][A-Za-z0-9_]*
 COMMENT := % [^\n]*
 
 data
+dump
 
-mov
-f2i
-i2f
-lod
+label
+@
+i
+f
+:
+;
+
 add
 fadd
 sub
@@ -22,33 +27,32 @@ div
 fdiv
 mod
 fmod
-
 or
 and
 xor
 shl
 shr
-
-jmp
-ucd
-eqz
-nez
-gtz
-ltz
-gez
-lez
-
-dsp
-inp
+dspc
+dspi
+dspf
+mov
+inpc
+inpi
+inpf
 new
 del
-label
-[
-]
-@
-i
-f
-:
-;
+inc
+dec
+neg
+fneg
+not
+lod
 
-dump
+jmp
+
+==0
+>0
+>=0
+<0
+<=0
+!=0
