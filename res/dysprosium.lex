@@ -1,70 +1,106 @@
+// Ignored
+
 WHITESPACE := \s+
 COMMENT := (//[^\n]*|/\*([^*]|\*[^/])*?\*?\*/)
+
+// Literals
+
 STRING-LITERAL := "([^"\\]|\\.)*"|'([^'\\]|\\.)*'
 INT-LITERAL := (0|-?[123456789][\d]*)
 FLOAT-LITERAL := ((0|-?[123456789]\d*)(\.\d*)?|\.\d+)
 BOOL-LITERAL := (true|false)
 
+// Module keywords
+
 module
 using
 from
 as
+export
 
-constructor
+// Special types
 
 void
+null
+int
+float
+char
+bool
 
-const
+// Declarations
 
-decl
-impl
 class
 func
 var
+enum
+mut
+:
+static
+constructor
 
-if
-else
-do
-while
-until
-for
-foreach
-break
-continue
-nothing
+// Inheritance
 
-return
+interface
+abstract
+extends
+implement
 
-goto
+// Access level
 
 public
 private
 protected
 
-static
+// Control
 
-println
+if
+else
+do
+while
+for
+foreach
+break
+continue
+return
+
+// I/O
+
 print
-
 input
-inputln
 
-read
+// Allocation
 
 new
-dealloc
-alloc
-sizeof
+new*
+new#
 
-as
+// Error handling
+throw
+try
+catch
 
-inline
+// Other
 
-var
-const
-
-import
+type
+typedef
+enum
+implicit
 export
+for
+friend
+if
+new
+new#
+new*
+operator
+public
+protected
+private
+return
+static
+this
+try
+throw
 
 [
 ]

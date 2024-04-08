@@ -1,22 +1,39 @@
 WHITESPACE := \s+
-register := r[12345678]|sp|sb
+register := r[12345678]|sp|sb|ip
 text := "([^"\\]|\\.)*"
 iconst := (0|-?[123456789][\d]*)i
 fconst := ((0|-?[123456789]\d*)(\.\d+)?|\.\d+)f
-
 label_name := [A-Z][A-Za-z0-9_]*
 COMMENT := % [^\n]*
 
 data
-dump
 
-label
 @
-i
-f
 :
 ;
 
+// Print memory contents
+dump
+
+// Mov is special
+mov
+
+// f2i and i2f are special
+f2i
+i2f
+
+// lod is special
+lod
+
+// dsp and inp are special
+dsp
+inp
+
+// new and del are special
+new
+del
+
+// Normal operations (15 of them)
 add
 fadd
 sub
@@ -32,27 +49,12 @@ and
 xor
 shl
 shr
-dspc
-dspi
-dspf
-mov
-inpc
-inpi
-inpf
-new
-del
-inc
-dec
-neg
-fneg
-not
-lod
 
 jmp
-
-==0
->0
->=0
-<0
-<=0
-!=0
+ucd
+eqz
+nez
+gtz
+ltz
+gez
+lez
