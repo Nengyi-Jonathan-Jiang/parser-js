@@ -8,7 +8,7 @@
 }
 
 #tokens-output>span:not(.token) {
-    color: red;
+    color: #aaa;
 }
 
 .token:has(span:last-child:not(:empty))>span:first-child {

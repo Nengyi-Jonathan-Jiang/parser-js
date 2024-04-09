@@ -1,0 +1,83 @@
+<!doctype HTML>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport"
+			  content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>Title</title>
+
+		<link rel="stylesheet" type="text/css" href="style.css">
+		<link rel="stylesheet" type="text/css" href="tokens-output.css">
+		<link rel="stylesheet" type="text/css" href="parse-output.css">
+	</head>
+	<body>
+		<div id="content">
+			<div id="left">
+				<div id="code-input-container">
+					<label><textarea spellcheck="false" id="code-input" placeholder="Enter code here...">
+r0 <- MAIN;
+
+DATA:
+GREET_STR:
+    "Hello world"
+
+FN:
+% Calling convention:
+
+% caller_address (1 word)
+% params...
+% locals...
+% -------------- <- sp points to 1 + last local
+
+% === FIB(inout int x) === %
+%     local x1
+
+PROC_FIB:
+    r3 <- sp;
+    dec r3; dec r3;   % Now r3 holds sp - 2 = #x
+    r1 <- @r3;        % Now r1 holds x
+    inc r3;           % Now r3 = sp - 1 = #x1
+    @r3 <- r1;        % Now #x1 = x
+
+    r0 <- L1;
+    % Now r1 holds x - 2; jump if x - 2 > 0
+    dec r1; dec r1 jmp >0;
+    % Base case, x <= 2
+    dec r3;           % Now r3 = sp - 2 = #x
+    @r3 <- 1i;        % Now x = 1
+    dec r3;           % Now r3 = sp - 3 = #caller address
+    sp <- r3;         % Now sp = #caller address
+    r0 <- @sp;        % Now r0 = caller address
+    jmp;              % Return
+L1:
+    % Remember r1 = x - 2
+    @sp <- CALL_END;  % Store caller address
+    inc sp;
+
+
+CALL_END:
+
+PROC_END:
+
+MAIN:
+    r1 <- GREET_STR;
+LOOP_START:
+    r0 <- LOOP_END;
+    dspc <- @r1 jmp ==0;
+    inc r1;
+    r0 <- LOOP_START;
+    jmp;
+LOOP_END:
+    </textarea></label>
+				</div>
+				<div id="tokens-output"></div>
+			</div>
+			<div id="right">
+				<div id="parse-output"></div>
+			</div>
+		</div>
+
+		<script src="script.js" type="module"></script>
+	</body>
+</html>

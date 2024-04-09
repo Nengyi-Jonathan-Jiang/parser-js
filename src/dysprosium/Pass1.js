@@ -2,7 +2,7 @@ import {createLexerFromFile, createParserFromFile, fetchTextContents} from "../l
 import {Symbol} from "../language/common/Symbol.js";
 
 export const dysprosiumLexer = createLexerFromFile(
-    await fetchTextContents('../res/dysprosium.lex'),
+    await fetchTextContents('../../res/dysprosium.lex'),
     [
         Symbol.get('COMMENT'),
         Symbol.get('WHITESPACE')
@@ -10,6 +10,6 @@ export const dysprosiumLexer = createLexerFromFile(
 );
 
 export const dysprosiumParser = createParserFromFile(
-    await fetchTextContents('../res/dysprosium.bnf'),
+    await fetchTextContents('../../res/dysprosium.bnf'),
     Symbol.get('program')
 );

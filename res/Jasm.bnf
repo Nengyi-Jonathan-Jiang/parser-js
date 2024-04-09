@@ -1,124 +1,88 @@
-statements
+program
 
-statements __EPSILON__
-statements := statements statement
-statement := partial_statement ;
+program __EPSILON__
+__CHAIN__ program := program statement
+
+statement := label-declaration
+statement := constant
+statement := text
 
 // Label declaration
 
-label_declaration := label label_name
-partial_statement := label_declaration
+label-declaration := label-name :
 
 // Type Definitions
 
-raw_location := reg
-raw_location := @ reg
+location := register
+location := @ register
 
 constant := iconst
 constant := fconst
+constant := label-name
+constant := cconst
+constant := hconst
 
-int_location := [ i raw_location ]
-float_location := [ f raw_location ]
+// Operators
 
-location := bool_location
-location := char_location
-location := int_location
-location := float_location
+op3 := add
+op3 := fadd
+op3 := sub
+op3 := fsub
+op3 := mul
+op3 := fmul
+op3 := div
+op3 := fdiv
+op3 := mod
+op3 := fmod
+op3 := or
+op3 := and
+op3 := xor
+op3 := shl
+op3 := shr
 
-bool := bool_location
-bool := bconst
-char := char_location
-char := cconst
-int := int_location
-int := iconst
-// We can use a location as a parameter to jmp
-int := label_name
-float := float_location
-float := fconst
-any := bool
-any := char
-any := int
-any := float
+op2 := neg
+op2 := fneg
+op2 := not
+op2 := new
+op2 := del
 
-// PRINT statement (maps to multiple instructions)
+dsp := dspc
+dsp := dspi
+dsp := dspf
+inp := inpc
+inp := inpi
+inp := inpf
 
-print_statement := print string
-partial_statement := print_statement
+op1 := inc
+op1 := dec
 
-// MOV and CPY
+expr-inp := location <- inp jump-clause
+expr-dsp := dsp <- location jump-clause
+expr-1 := op1 location jump-clause
+expr-2 := location <- op2 location jump-clause
+expr-3 := location <- location op3 location jump-clause
+expr-mov := location <- location jump-clause
 
-mov_statement := mov any location
-cpy_statement := cpy int int int
+jump-clause __EPSILON__
+jump-clause := jmp cond
+cond __EPSILON__
+cond := <0
+cond := <=0
+cond := >0
+cond := >=0
+cond := !=0
+cond := ==0
 
-partial_statement := mov_statement
-partial_statement := cpy_statement
+expr-lod := location <- constant
 
-// Arithmetic operations
+expr := expr-inp
+expr := expr-dsp
+expr := expr-1
+expr := expr-2
+expr := expr-3
+expr := expr-mov
+expr := expr-lod
 
-arithmetic_op := add
-arithmetic_op := sub
-arithmetic_op := mul
-arithmetic_op := div
-arithmetic_op := mod
+statement := expr ;
 
-arithmetic_statement := arithmetic_op int int int_location
-arithmetic_statement := arithmetic_op int float float_location
-arithmetic_statement := arithmetic_op float int float_location
-arithmetic_statement := arithmetic_op float float float_location
-
-partial_statement := arithmetic_statement
-
-// Bitwise operations
-
-bitwise_op := or
-bitwise_op := xor
-bitwise_op := and
-
-bitwise_statement := bitwise_op int int int_location
-bitwise_statement := bitwise_op bool bool bool_location
-
-partial_statement := bitwise_statement
-
-// Bit Shift operations
-
-sop := shl
-sop := shr
-
-shift_statement := sop int int int_location
-
-partial_statement := shift_statement
-
-// JMP and CMP
-
-condition := ucd
-condition := eqz
-condition := nez
-condition := gtz
-condition := ltz
-condition := gez
-condition := lez
-
-jmp_statement := jmp any int condition
-cmp_statement := cmp any bool_location condition
-
-partial_statement := jmp_statement
-partial_statement := cmp_statement
-
-// DSP and INP
-
-display_statement := dsp any
-input_statement := inp location
-partial_statement := display_statement
-partial_statement := input_statement
-
-// Memory management instructions
-
-alloc_statement := new int int_location
-dealloc_statement := del int
-
-partial_statement := alloc_statement
-partial_statement := dealloc_statement
-
-
-
-partial_statement := dump
+statement := jump-clause ;

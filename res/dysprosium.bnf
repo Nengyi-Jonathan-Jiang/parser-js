@@ -13,23 +13,20 @@ __CHAIN__ imports := imports import
 import := using import-clause ;
 
 import-clause := module-import-clause
-import-clause := aliased-module-import-clause
 import-clause := wildcard-import-clause
 import-clause := specific-import-clause
 
 module-import-clause := module-name
-aliased-module-import-clause := module-name as module-name
 wildcard-import-clause := * from module-name
 specific-import-clause := { import-list } from module-name
 
 __WRAP__ import-list := specific-import
 __CHAIN__ import-list := import-list , specific-import
 
-specific-import := simple-specific-import
+specific-import := IDENTIFIER
 specific-import := aliased-specific-import
 
-simple-specific-import := IDENTIFIER
-aliased-specific-import := IDENTIFIER as IDENTIFIER
+
 
 statements __EPSILON__
 __CHAIN__ statements := statements statement
@@ -57,18 +54,23 @@ declaration := class-declaration
 
 export-statement := export declaration
 
-nothing-statement := nothing ;
-
 type := non-void-type
 type := void
 
 __WRAP__ raw-type := IDENTIFIER
+__WRAP__ raw-type := builtin-type
 raw-type := template
-template := raw-type < template-params >
+template := raw-type <: template-params :>
 template-params := type
 __CHAIN__ template-params := template-params , type
 non-void-type := raw-type
-non-void-type := # non-void-type
+
+// Owning reference
+non-void-type := non-void-type *
+// Shared (owning) reference
+non-void-type := non-void-type #
+// Non-owning reference
+non-void-type := non-void-type &
 
 if-else-statement := if-statement else-clause
 

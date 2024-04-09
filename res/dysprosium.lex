@@ -5,7 +5,8 @@ COMMENT := (//[^\n]*|/\*([^*]|\*[^/])*?\*?\*/)
 
 // Literals
 
-STRING-LITERAL := "([^"\\]|\\.)*"|'([^'\\]|\\.)*'
+STRING-LITERAL := "([^"\\]|\\.)*"
+CHAR-LITERAL := '[^'\\]|\\.'
 INT-LITERAL := (0|-?[123456789][\d]*)
 FLOAT-LITERAL := ((0|-?[123456789]\d*)(\.\d*)?|\.\d+)
 BOOL-LITERAL := (true|false)
@@ -15,17 +16,16 @@ BOOL-LITERAL := (true|false)
 module
 using
 from
-as
 export
 
-// Special types
+// Types
 
+type
+typedef
 void
 null
-int
-float
-char
-bool
+builtin-type := int|float|char|bool
+as
 
 // Declarations
 
@@ -37,6 +37,9 @@ mut
 :
 static
 constructor
+operator
+implicit
+this
 
 // Inheritance
 
@@ -68,39 +71,19 @@ return
 print
 input
 
-// Allocation
+// New
 
 new
 new*
 new#
 
 // Error handling
+
 throw
 try
 catch
 
-// Other
-
-type
-typedef
-enum
-implicit
-export
-for
-friend
-if
-new
-new#
-new*
-operator
-public
-protected
-private
-return
-static
-this
-try
-throw
+// Symbols
 
 [
 ]
@@ -161,7 +144,7 @@ throw
 <=>
 
 >>
->>=
+=>>
 <<
 <<=
 

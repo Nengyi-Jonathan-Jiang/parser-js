@@ -1,0 +1,45 @@
+program
+
+program := globals functions statements
+
+functions __EPSILON__
+__CHAIN__ functions := functions function
+
+function := func name function-variables { statements }
+function-variables := ( )
+function-variables := ( function-variables-inner )
+function-variables-inner := function-variable
+__CHAIN__ function-variables-inner := function-variables-inner , function-variable
+function-variable := name
+
+globals __EPSILON__
+__CHAIN__ globals := globals global
+global := name
+global := name = constant
+
+statements __EPSILON__
+__CHAIN__ statements := statements -statement
+
+-statement := statement ;
+
+statement := access-statement
+access-statement := param name
+access-statement := & param name
+access-statement := global name
+access-statement := & global name
+
+statement := constant-statement
+constant-statement := const constant
+
+statement := call-statement
+call-statement := call name
+
+statement := push-statement
+push-statement := push uint
+
+statement := write-statement
+write-statement := write name
+
+statement := operator-statement
+__WRAP__ operator-statement := operator
+__WRAP__ operator-statement := write

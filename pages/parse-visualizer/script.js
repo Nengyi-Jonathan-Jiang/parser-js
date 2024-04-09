@@ -1,7 +1,7 @@
-import {Token, Symbol} from '../src/language/common/common.js';
+import {Token, Symbol} from '../../src/language/common/common.js';
 
-import {dysprosiumAnalyzer} from "../src/dysprosium/SemanticAnalyzer.js";
-import {dysprosiumLexer, dysprosiumParser} from "../src/dysprosium/Pass1.js";
+import {dysprosiumAnalyzer} from "../../src/dysprosium/SemanticAnalyzer.js";
+import {dysprosiumLexer, dysprosiumParser} from "../../src/dysprosium/Pass1.js";
 
 /** @type {HTMLTextAreaElement} */
 const code_input = document.getElementById('code-input');
