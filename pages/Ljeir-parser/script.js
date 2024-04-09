@@ -8,10 +8,7 @@ const lexer = createLexerFromFile(
         Symbol.get('WHITESPACE')
     ]
 );
-const parser = createParserFromFile(
-    await fetchTextContents('../../res/LJeir.bnf'),
-    Symbol.get('program')
-);
+const parser = createParserFromFile(Symbol.get('program'), await fetchTextContents('../../res/LJeir.bnf'));
 
 /** @type {HTMLTextAreaElement} */
 const code_input = document.getElementById('code-input');

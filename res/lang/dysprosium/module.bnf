@@ -1,0 +1,25 @@
+// Modules and imports
+
+module-declaration := module module-name ;
+
+__WRAP__ module-name := IDENTIFIER
+__CHAIN__ module-name := module-name . IDENTIFIER
+
+imports __EPSILON__
+__CHAIN__ imports := imports import
+
+import := using import-clause ;
+
+import-clause := module-import-clause
+import-clause := wildcard-import-clause
+import-clause := specific-import-clause
+
+module-import-clause := module-name
+wildcard-import-clause := * from module-name
+specific-import-clause := { import-list } from module-name
+
+__WRAP__ import-list := specific-import
+__CHAIN__ import-list := import-list , specific-import
+
+specific-import := IDENTIFIER
+specific-import := aliased-specific-import

@@ -1,0 +1,75 @@
+
+statements __EPSILON__
+__CHAIN__ statements := statements statement
+
+statement := print-statement
+statement := block-statement
+statement := return-statement
+statement := expression-statement
+statement := declaration
+statement := class-declaration
+statement := if-statement
+statement := if-else-statement
+statement := loop
+statement := loop-else
+statement := loop-exit-statement
+statement := nothing-statement
+statement := export-statement
+
+declaration := function-declaration
+declaration := variable-declaration
+declaration := variable-initialization
+declaration := class-declaration
+
+export-statement := export declaration
+
+if-else-statement := if-statement else-clause
+
+if-statement := if ( expr ) statement
+else-clause := else statement
+
+loop-exit := break
+loop-exit := continue
+loop-exit-statement := loop-exit ;
+loop-exit-statement := loop-exit INT-LITERAL ;
+
+loop-else := loop else-clause
+
+loop := while-loop
+loop := until-loop
+loop := for-loop
+loop := foreach-loop
+
+while-loop := while ( expr ) loop-body
+until-loop := until ( expr ) loop-body
+
+__WRAP__ loop-body := statement
+
+for-loop := for ( variable-initialization expr ; expr ) statement
+
+expression-statement := expr ;
+return-statement := return expr ;
+block-statement := { statements }
+
+print-statement := print expr ;
+print-statement := println expr ;
+print-statement := print STRING-LITERAL ;
+print-statement := println STRING-LITERAL ;
+
+variable-initialization := let IDENTIFIER : non-void-type = expr ;
+variable-declaration := let IDENTIFIER  : non-void-type ;
+variable-initialization := mut IDENTIFIER : non-void-type = expr ;
+variable-declaration := mut IDENTIFIER  : non-void-type ;
+
+class-declaration := class IDENTIFIER { class-body }
+
+__CHAIN__ class-body := class-body class-body-statement
+class-body __EPSILON__
+
+class-body-statement := visibility-modifier declaration
+class-body-statement := visibility-modifier constructor-declaration
+class-body-statement := visibility-modifier static declaration
+
+visibility-modifier := public
+visibility-modifier := private
+visibility-modifier := protected

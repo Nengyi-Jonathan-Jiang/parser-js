@@ -31,7 +31,7 @@ as
 
 class
 func
-var
+let
 enum
 mut
 :
@@ -75,7 +75,7 @@ input
 
 new
 new*
-new#
+new$
 
 // Error handling
 
@@ -108,6 +108,7 @@ catch
 
 =
 
+$
 @
 +
 +=
@@ -132,8 +133,7 @@ catch
 ||
 ||=
 
-<:
-:>
+!(
 
 >
 >=

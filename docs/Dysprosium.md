@@ -13,12 +13,13 @@
   - No raw pointers -- only c++ like unique and shared owning 
   pointers, and c++ reference-like non owning pointers
     - unique are denoted by `*`
-    - shared are denoted by `#`
+    - shared are denoted by `$`
     - reference are denoted by `&`
     - Use `&` to take reference
-    - Pointers and references can be nullable, denoted by `?`
+    - Pointers and references can be nullable, denoted by `?`. 
+    For example, a nullable reference to `T` would be `T&?`
     - Nullability can be taken off by adding `!`
-    - Use `new*` and `new#` to create owning pointers
+    - Use `new*` and `new$` to create owning pointers
     - Use `new` for normal instantiation
     - Arrays are also built in, denoted by `[]`.
     - Arrays of non-nullable elements cannot be constructed
@@ -28,19 +29,19 @@
     non-owning `&`.
     - Passing rules:
 
-    |        | pass `*`    | pass `#`         | pass `&`  |
+    |        | pass `*`    | pass `$`         | pass `&`  |
     |--------|-------------|------------------|-----------|
     | as `*` | Move        | Move into shared | Reference |
-    | as `#` | Not allowed | Make new shared  | Reference |
+    | as `$` | Not allowed | Make new shared  | Reference |
     | as `&` | Not allowed | Not allowed      | Reference |
 
-  - Dysprosium supports enum and flag classes
+  - One cannot make a pointer to pointer.
+
+  - Dysprosium supports enums classes (Java-like)
     - Must have only const methods and members. Enums may be 
   detected through `switch` statements and expressions; flags 
-  can be used through `&` and `|`.
-    - Flags may be larger than enums (may take up N >> 32)
-    dbytes, where N is the number of flags. 
-  - Switch statements exist.
+  can be used through `&` and `|`. 
+  - Switch statements exist?
   - Expression-based constructs are allowed. To use them,
   include the `yield` keyword or a direct value in each block.
   <br>

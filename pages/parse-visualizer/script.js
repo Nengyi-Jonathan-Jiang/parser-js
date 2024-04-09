@@ -10,6 +10,8 @@ const tokens_output = document.getElementById('tokens-output');
 /** @type {HTMLDivElement} */
 const parse_output = document.getElementById('parse-output');
 
+code_input.value = window.localStorage.getItem('t') || '';
+
 /**
  * @param {Token} token
  * @returns {HTMLElement}
@@ -94,6 +96,8 @@ code_input.oninput = _ => {
 
     const input = code_input.value;
     const tokens = dysprosiumLexer.lex(input);
+
+    window.localStorage.setItem('t', input);
 
     update_tokens(input, tokens);
 

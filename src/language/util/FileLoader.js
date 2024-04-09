@@ -28,11 +28,20 @@ export function createLexerFromFile(file_contents, ignored_symbols) {
     ]);
 }
 
-export function createParserFromFile(file_contents, start_symbol) {
-    const rules = file_contents
-        .trim()
-        .split(/\s*\n\s*/g)
-        .filter(i => !i.startsWith('//'))
+/**
+ * @param {Symbol} start_symbol
+ * @param {string} file_contents
+ */
+export function createParserFromFile(start_symbol, ...file_contents) {
+    let lines = [].concat(
+        ...file_contents.map(
+            file => file
+                .trim()
+                .split(/\s*\n\s*/g)
+                .filter(i => !i.startsWith('//'))
+        )
+    );
+    const rules = lines
         .map(i => i.split(/\s+/))
         .map(x => {
             let unwrap = true, chained = false;

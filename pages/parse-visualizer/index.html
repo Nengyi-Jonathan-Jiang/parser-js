@@ -17,35 +17,7 @@
 			<div class="v-pane">
 				<div id="code-input-container" class="leaf-pane">
 					<label for="code-input">
-						<textarea spellcheck="false" id="code-input" placeholder="Enter code here..." wrap="off">
-module robot;
-
-using {Timer} from std.time;
-using {Color} from std.color;
-using {RobotBase} from jRobotics;
-
-export const TEAM_NUMBER : int = 4639;
-
-export class Robot {
-    private const ledStrip : LEDStrip;
-
-    public constructor(ledStripPort : int){
-        this.ledStrip = new LEDStrip(ledStripPort);
-    }
-
-    public func periodic() -> void {
-        const currentTime : float = Timer.getTimer().getTime();
-
-        const color: Color = Color.fromHSV(0, 0, 0);
-    }
-}
-
-
-module main;
-using {RobotRunner} from jRobotics;
-using {Robot} from robot;
-
-RobotRunner.runRobot(Robot);</textarea>
+						<textarea spellcheck="false" id="code-input" placeholder="Enter code here..." wrap="off"></textarea>
 					</label>
 				</div>
 				<div id="tokens-output" class="leaf-pane"></div>
