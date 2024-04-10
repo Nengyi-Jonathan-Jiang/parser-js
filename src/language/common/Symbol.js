@@ -46,10 +46,15 @@ export class Symbol {
     }
 
     toString() {
-        return this.#name;
+        switch(this) {
+            case Symbol.__EPSILON__: return '__EPSILON__';
+            case Symbol.__START__: return '__START__';
+            case Symbol.__EOF__: return '__EOF__';
+            default: return this.#name;
+        }
     }
 
     static __EPSILON__ = Symbol.get('\x00');
     static __START__ = Symbol.get('\x01');
-    static __EOF___ = Symbol.get('\x02');
+    static __EOF__ = Symbol.get('\x02');
 }

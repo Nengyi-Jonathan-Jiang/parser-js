@@ -2,9 +2,6 @@ import {Symbol} from "../common/Symbol.js";
 import {SymbolString} from "./SymbolString.js";
 
 export class Rule {
-    static #_id = 0;
-
-    #id = ++Rule.#_id;
     /** @type {boolean} */
     #unwrap;
     /** @type {boolean} */

@@ -1,9 +1,10 @@
 import {Rule} from "../ParseRule.js";
 import {Symbol} from "../../common/Symbol.js";
+import {SymbolString} from "../SymbolString.js";
 
 export class ParsingTable {
     /** @type {Map<Symbol, TableEntry>[]} */
-    #actionTable;
+    #table;
     /** @type {Map<Symbol, GotoEntry>[]} */
     #gotoTable;
 
@@ -12,8 +13,7 @@ export class ParsingTable {
 
     constructor(numStates) {
         this.#numStates = numStates;
-        this.#actionTable = new Array(numStates).fill(null).map(_ => new Map);
-        this.#gotoTable = new Array(numStates).fill(null).map(_ => new Map);
+        this.#table = new Array(numStates).fill(null).map(_ => new Map);
     }
 
     /**
@@ -22,15 +22,15 @@ export class ParsingTable {
      * @return {TableEntry}
      */
     getAction(state, symbol) {
-        return this.#actionTable[state].get(symbol);
+        return this.#table[state].get(symbol);
     }
 
     /**
      * @param {number} state
-     * @return {TableEntry}
+     * @return {Set<Symbol>}
      */
     acceptableSymbolsAtState(state) {
-        return new Set(this.#actionTable[state].keys());
+        return new Set(this.#table[state].keys());
     }
 
     /**
@@ -39,7 +39,8 @@ export class ParsingTable {
      * @return {GotoEntry}
      */
     getGoto(state, symbol) {
-        return this.#gotoTable[state].get(symbol);
+        // noinspection JSValidateTypes
+        return this.#table[state].get(symbol);
     }
 
     /**
@@ -48,7 +49,7 @@ export class ParsingTable {
      * @param {Rule} rule
      */
     setActionReduce(state, symbol, rule) {
-        this.#actionTable[state].set(symbol, new ReduceEntry(rule));
+        this.#table[state].set(symbol, new ReduceEntry(rule));
     }
 
     /**
@@ -57,7 +58,7 @@ export class ParsingTable {
      * @param {number} nextState
      */
     setActionShift(state, symbol, nextState) {
-        this.#actionTable[state].set(symbol, new ShiftEntry(nextState));
+        this.#table[state].set(symbol, new ShiftEntry(nextState));
     }
 
     /**
@@ -65,7 +66,7 @@ export class ParsingTable {
      * @param {Symbol} symbol
      */
     setActionAccept(state, symbol) {
-        this.#actionTable[state].set(symbol, new AcceptEntry);
+        this.#table[state].set(symbol, new AcceptEntry);
     }
 
     /**
@@ -74,7 +75,77 @@ export class ParsingTable {
      * @param {number} n
      */
     setGoto(state, symbol, n) {
-        this.#gotoTable[state].set(symbol, new GotoEntry(n));
+        this.#table[state].set(symbol, new GotoEntry(n));
+    }
+
+    toString() {
+        let res = ''
+        const length = this.#table.length;
+        res += length + '\n'
+        for(const state of this.#table) {
+            res += `state ${state.size}\n`;
+            for(const [symbol, entry] of state) {
+                if(entry instanceof ShiftEntry) {
+                    res += `${symbol} shift ${entry.nextState}\n`
+                }
+                else if(entry instanceof ReduceEntry) {
+                    res += `${symbol} reduce ${entry.rule}\n`
+                }
+                else if(entry instanceof AcceptEntry) {
+                    res += `${symbol} accept\n`
+                }
+                else if(entry instanceof GotoEntry) {
+                    res += `${symbol} goto ${entry.nextState}\n`
+                }
+            }
+        }
+        return res;
+    }
+
+    static fromString(str) {
+        const arr = str.split(/\s*\n\s*/g);
+        let idx = 0;
+        const rules = new Map;
+
+        const numStates = +arr[idx++];
+        const res = new ParsingTable(numStates);
+        for(let state = 0; state < numStates; state++) {
+            for(let numEntries = +arr[idx++].split(' ')[1]; numEntries --> 0;) {
+                const entry = arr[idx++];
+                let [symbol, entryType, ...rest] = entry.split(' ');
+                switch(entryType) {
+                    case 'shift':
+                        res.setActionShift(state, symbol, +rest[0]);
+                        break;
+                    case 'reduce':
+                        let rule_str = rest.join(' ');
+                        if(!rules.has(rule_str)) {
+                            let unwrap = true, chain = false;
+                            if(rest[0] === '__WRAP__') {
+                                unwrap = false;
+                                rest.shift();
+                            }
+                            else if(rest[0] === '__CHAIN__') {
+                                chain = true;
+                                rest.shift();
+                            }
+                            const [lhs,, ...rhs] = rest.map(i => Symbol.get(i.trim()));
+                            const rule = new Rule(lhs, new SymbolString(...rhs), chain, unwrap);
+                            rules.set(rule_str, rule);
+                        }
+                        res.setActionReduce(state, symbol, rules.get(rule_str));
+                        break;
+                    case 'accept':
+                        res.setActionAccept(state, symbol);
+                        break;
+                    case 'goto':
+                        res.setGoto(state, symbol, +rest[0]);
+                        break;
+                }
+            }
+        }
+
+        return res;
     }
 }
 
@@ -82,9 +153,9 @@ export class ParsingTable {
 export class TableEntry {
     static EntryType = {SHIFT: 'SHIFT', REDUCE: 'REDUCE', ACCEPT: 'ACCEPT', GOTO: 'GOTO'}
 
-    /** @type {'SHIFT' | 'REDUCE' | 'ACCEPT' | 'GOTO'} */
-    get actionType() {
-    }
+    // noinspection JSUnusedGlobalSymbols
+    /**  @type {'SHIFT' | 'REDUCE' | 'ACCEPT' | 'GOTO'} */
+    get actionType() {}
 }
 
 export class ReduceEntry extends TableEntry {

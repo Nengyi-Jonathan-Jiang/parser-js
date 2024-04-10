@@ -117,7 +117,7 @@ export class LRParseTableBuilderBase {
     generateActionSetEntries(state, itemSet){
         for(/** @type {Item} */ const item of itemSet){
             if(item.isFinished && item.rule.toString() === this.grammar.startRule.toString()){
-                this.table.setActionAccept(state, Symbol.__EOF___);
+                this.table.setActionAccept(state, Symbol.__EOF__);
             }
             else if(item.isFinished){
                 this.generateReductions(state, item);

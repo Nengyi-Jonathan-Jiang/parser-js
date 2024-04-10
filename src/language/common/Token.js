@@ -61,7 +61,7 @@ export class Token {
         const {type, value} = this;
         return (
             type === Symbol.__START__ ? '__START__' :
-            type === Symbol.__EOF___ ? '__EOF___' :
+            type === Symbol.__EOF__ ? '__EOF___' :
             type === Symbol.__EPSILON__ ? '__EPSILON__' :
             type.name === value
                 ? type.name

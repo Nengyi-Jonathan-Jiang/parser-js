@@ -15,6 +15,11 @@ export class LRParser {
         this.#table = table;
     }
 
+    /** @type {ParsingTable} */
+    get table() {
+        return this.#table;
+    }
+
     /**
      * Parses a string of tokens
      * @param {Iterable<Token>} tokens A string of tokens to be parsed

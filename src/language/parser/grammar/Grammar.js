@@ -62,7 +62,7 @@ export class Grammar {
         // Classify symbols as terminals or nonterminals
 
         this.#allSymbols.add(Symbol.__START__);
-        this.#allSymbols.add(Symbol.__EOF___);
+        this.#allSymbols.add(Symbol.__EOF__);
 
         this.#nonTerminals.add(Symbol.__START__);
 
@@ -94,7 +94,7 @@ export class Grammar {
             }
         }
 
-        this.#followSets.get(Symbol.__START__).add(Symbol.__EOF___);
+        this.#followSets.get(Symbol.__START__).add(Symbol.__EOF__);
 
         // Calculate FIRST sets, FOLLOW sets, and the set of nullable symbols
 

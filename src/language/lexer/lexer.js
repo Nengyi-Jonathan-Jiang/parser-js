@@ -33,7 +33,7 @@ export class Lexer {
             let next = lex.next();
             res.push(next);
 
-            if(next.type === Symbol.__EOF___) break;
+            if(next.type === Symbol.__EOF__) break;
         }
 
         return res;
@@ -74,7 +74,7 @@ export class Lex {
     /** @returns {Token | null} */
     try_get_next() {
         if (this.done) {
-            return new Token(Symbol.__EOF___, '', this.#position, this.#position);
+            return new Token(Symbol.__EOF__, '', this.#position, this.#position);
         }
 
         /** @type {Symbol | null} */
