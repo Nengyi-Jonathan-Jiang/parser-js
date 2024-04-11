@@ -3,8 +3,7 @@ type := void
 
 __WRAP__ raw-type := IDENTIFIER
 __WRAP__ raw-type := builtin-type
-template-params := !( template-param-list )
-template-params := ! type
+template-params := < template-param-list >
 
 template-param-list := type
 __CHAIN__ template-param-list := template-param-list , type
@@ -13,12 +12,12 @@ non-void-type := raw-type
 non-void-type := raw-type template-params
 
 unique-ptr := non-void-type *
-shared-ptr := non-void-type &
+shared-ptr := non-void-type $
 reference := non-void-type &
 nullable-unique-ptr := non-void-type * ?
 nullable-shared-ptr := non-void-type $ ?
 nullable-reference := non-void-type & ?
-mutable-type := non-void-type mut
+mutable := non-void-type mut
 
 non-void-type := unique-ptr
 non-void-type := shared-ptr
@@ -27,4 +26,6 @@ non-void-type := nullable-unique-ptr
 non-void-type := nullable-shared-ptr
 non-void-type := nullable-reference
 
-non-void-type := mutable-type
+non-void-type := mutable
+
+non-void-type := ( non-void-type )

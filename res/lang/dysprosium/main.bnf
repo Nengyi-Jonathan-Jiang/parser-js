@@ -3,60 +3,6 @@ __CHAIN__ program := program file
 
 file := module-declaration imports statements
 
-op := =
-op := +=
-op := -=
-op := *=
-op := /=
-op := %=
-op := <=
-op := <
-op := >=
-op := >
-op := ==
-op := !=
-op := +
-op := -
-op := *
-op := /
-op := %
-
-expr := postfix-expr
-
-__CHAIN__ expr := expr op postfix-expr
-
-postfix-expr := primary-expr
-postfix-expr := postfix-expr postfix-op
-postfix-expr := call-expr
-postfix-expr := index-expr
-postfix-expr := access-expr
-
-postfix-op := --
-postfix-op := ++
-
-call-expr := postfix-expr ( )
-call-expr := postfix-expr ( argument-list )
-index-expr := postfix-expr [ argument-list ]
-argument-list := expr
-__CHAIN__ argument-list := argument-list , argument
-__WRAP__ argument-list := argument
-__WRAP__ argument := expr
-
-access-expr := postfix-expr . IDENTIFIER
-
-primary-expr := INT-LITERAL
-primary-expr := FLOAT-LITERAL
-primary-expr := IDENTIFIER
-primary-expr := ( expr )
-primary-expr := input-expr
-primary-expr := new-expr
-
-new-expr := new IDENTIFIER ( argument-list )
-new-expr := new* IDENTIFIER ( argument-list )
-new-expr := new$ IDENTIFIER ( argument-list )
-
-input-expr := input type
-
 constructor-declaration := constructor parameter-list block-statement
 
 function-declaration := func IDENTIFIER parameter-list -> return type expr ;
