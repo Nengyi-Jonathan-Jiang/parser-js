@@ -5,9 +5,6 @@ import {SymbolString} from "../SymbolString.js";
 export class ParsingTable {
     /** @type {Map<Symbol, TableEntry>[]} */
     #table;
-    /** @type {Map<Symbol, GotoEntry>[]} */
-    #gotoTable;
-
     /** @type {number} */
     #numStates;
 
@@ -113,6 +110,7 @@ export class ParsingTable {
             for(let numEntries = +arr[idx++].split(' ')[1]; numEntries --> 0;) {
                 const entry = arr[idx++];
                 let [symbol, entryType, ...rest] = entry.split(' ');
+                symbol = Symbol.get(symbol);
                 switch(entryType) {
                     case 'shift':
                         res.setActionShift(state, symbol, +rest[0]);

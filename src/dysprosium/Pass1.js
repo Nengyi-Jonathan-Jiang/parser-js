@@ -37,12 +37,11 @@ else {
     const pTable = ParsingTable.fromString(savedParsingTable);
 
     parser = new LRParser(pTable);
-
-    console.log(savedParsingTable);
-    console.log(pTable.toString())
 }
 
 export const dysprosiumParser = parser;
+window.dysprosiumParser = parser;
+window.getSymbol = i => Symbol.get(i);
 
 window.clearSavedParser = function() {
     window.localStorage.setItem('parse-file', null);
