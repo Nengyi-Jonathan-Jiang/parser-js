@@ -56,6 +56,7 @@ export class ParsingTable {
             case 'REDUCE':
                 this.#conflicts.push({type: "RR", state, symbol});
                 break;
+            case undefined: break;
             default:
                 console.log('unknown conflict')
         }
