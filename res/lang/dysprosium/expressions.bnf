@@ -19,8 +19,11 @@ op := *
 op := /
 op := %
 
-prefix-expr := # prefix-expr
-prefix-expr := @ prefix-expr
+address-of := # prefix-expr
+dereference := @ prefix-expr
+
+prefix-expr := address-of
+prefix-expr := dereference
 prefix-expr := postfix-expr
 
 postfix-expr := primary-expr
@@ -44,13 +47,21 @@ access-expr := postfix-expr . IDENTIFIER
 
 primary-expr := INT-LITERAL
 primary-expr := FLOAT-LITERAL
+primary-expr := CHAR-LITERAL
+primary-expr := BOOL-LITERAL
+primary-expr := STRING-LITERAL
+primary-expr := null
+
 primary-expr := IDENTIFIER
 primary-expr := ( expr )
 primary-expr := input-expr
 primary-expr := new-expr
 
-new-expr := new IDENTIFIER ( argument-list )
-new-expr := new* IDENTIFIER ( argument-list )
-new-expr := new$ IDENTIFIER ( argument-list )
+new-expr := new type ( argument-list )
+new-expr := new* type ( argument-list )
+new-expr := new$ type ( argument-list )
+new-expr := new type [ expr ]
+new-expr := new* type [ expr ]
+new-expr := new$ type [ expr ]
 
 input-expr := input type

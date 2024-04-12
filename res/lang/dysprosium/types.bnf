@@ -29,3 +29,9 @@ non-void-type := nullable-reference
 non-void-type := mutable
 
 non-void-type := ( non-void-type )
+
+non-void-type := unsized-array
+non-void-type := sized-array
+
+unsized-array := non-void-type [ ]
+sized-array := non-void-type [ expr ]

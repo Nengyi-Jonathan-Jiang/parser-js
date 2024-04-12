@@ -8,6 +8,9 @@ export class ParsingTable {
     /** @type {number} */
     #numStates;
 
+    /** @type {{type: "SR"|"RR", state: number, symbol: Symbol}[]} */
+    #conflicts = [];
+
     constructor(numStates) {
         this.#numStates = numStates;
         this.#table = new Array(numStates).fill(null).map(_ => new Map);
@@ -46,6 +49,16 @@ export class ParsingTable {
      * @param {Rule} rule
      */
     setActionReduce(state, symbol, rule) {
+        switch(this.#table[state].get(symbol)?.actionType) {
+            case 'SHIFT':
+                this.#conflicts.push({type: "SR", state, symbol});
+                break;
+            case 'REDUCE':
+                this.#conflicts.push({type: "RR", state, symbol});
+                break;
+            default:
+                console.log('unknown conflict')
+        }
         this.#table[state].set(symbol, new ReduceEntry(rule));
     }
 
@@ -55,6 +68,9 @@ export class ParsingTable {
      * @param {number} nextState
      */
     setActionShift(state, symbol, nextState) {
+        if(this.#table[state].has(symbol)) {
+            this.#conflicts.push({type: "SR", state, symbol});
+        }
         this.#table[state].set(symbol, new ShiftEntry(nextState));
     }
 
@@ -73,6 +89,10 @@ export class ParsingTable {
      */
     setGoto(state, symbol, n) {
         this.#table[state].set(symbol, new GotoEntry(n));
+    }
+
+    get conflicts() {
+        return this.#conflicts;
     }
 
     toString() {

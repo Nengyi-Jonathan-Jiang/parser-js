@@ -26,6 +26,9 @@ export class LRParseTableBuilderBase {
         this.grammar = grammar;
         this.generateConfiguratingSets();
         this.generateParsingTable();
+
+        const conflicts = this.table.conflicts;
+        console.log(`${conflicts.length} conflicts`, conflicts);
     }
 
     /** Generates the parsing table */
