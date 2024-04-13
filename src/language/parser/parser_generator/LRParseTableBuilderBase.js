@@ -14,6 +14,8 @@ export class LRParseTableBuilderBase {
     grammar;
     /** @type {SMap<ItemSet, number>} */
     configuratingSets;
+    /** @type {Map<number, ItemSet>} */
+    states;
 
     /** @type {Map<number, Map<Symbol, number>>} */
     successors;
@@ -28,7 +30,30 @@ export class LRParseTableBuilderBase {
         this.generateParsingTable();
 
         const conflicts = this.table.conflicts;
+
         console.log(`${conflicts.length} conflicts`, conflicts);
+        {
+            let problematicRules = new Set();
+            for(let x of conflicts){
+                x.rule && problematicRules.add(x.rule);
+                x.rule1 && problematicRules.add(x.rule1);
+                x.rule2 && problematicRules.add(x.rule2);
+            }
+            console.log(`Problematic rules:\n    ${[...problematicRules].join('\n    ')}`);
+
+            let reduceReduceConflicts = new Set();
+            for(let x of conflicts.filter(i => i.type === 'RR')){
+                let rules = [x.rule1.toString(), x.rule2.toString()].sort();
+                reduceReduceConflicts.add(`${rules[0]}\n    with\n    ${rules[1]}\n    `);
+            }
+            console.log(`Reduce-reduce conflicts:\n    ${[...reduceReduceConflicts].join('\n    ')}`);
+
+            let shiftReduceConflicts = new Set();
+            for(let x of conflicts.filter(i => i.type === 'SR')){
+                const {nextState, rule} = x;
+                console.log(`Shift-reduce conflict on state ${nextState}:\n${rule} with ${this.states.get(nextState)}`)
+            }
+        }
     }
 
     /** Generates the parsing table */
@@ -57,11 +82,13 @@ export class LRParseTableBuilderBase {
 
         this.configuratingSets = new SMap;
         this.successors = new Map;
+        this.states = new Map;
 
         const initialState = this.itemClosure(this.startItem);
 
         this.configuratingSets.set(initialState, 0);
         this.successors.set(0, new Map);
+        this.states.set(0, initialState);
 
         /** @type {SSet<ItemSet>} */
         let edge = new SSet([initialState]);
@@ -101,6 +128,7 @@ export class LRParseTableBuilderBase {
             const newState = this.configuratingSets.size;
             this.successors.set(newState, new Map);
             this.configuratingSets.set(successor, newState);
+            this.states.set(newState, successor);
             this.successors.get(state).set(symbol, newState);
             console.log(`Found ${this.configuratingSets.size}th configurating set (${successor.size} items)`);
             return true;

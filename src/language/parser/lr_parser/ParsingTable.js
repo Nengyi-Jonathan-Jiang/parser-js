@@ -2,13 +2,24 @@ import {Rule} from "../ParseRule.js";
 import {Symbol} from "../../common/Symbol.js";
 import {SymbolString} from "../SymbolString.js";
 
+/**
+ * @export
+ * @typedef {
+ *      {type: "SR", state: number, symbol: Symbol, nextState: number, rule: Rule} |
+ *      {type: "RR", state: number, symbol: Symbol, rule1: Rule, rule2: Rule} |
+ *      {type: "SS" } |
+ *      {type: "Unknown"}
+ * } ParseConflict
+ */
+
 export class ParsingTable {
     /** @type {Map<Symbol, TableEntry>[]} */
     #table;
     /** @type {number} */
     #numStates;
 
-    /** @type {{type: "SR"|"RR", state: number, symbol: Symbol}[]} */
+    /** @type {ParseConflict[]}
+     */
     #conflicts = [];
 
     constructor(numStates) {
@@ -49,17 +60,20 @@ export class ParsingTable {
      * @param {Rule} rule
      */
     setActionReduce(state, symbol, rule) {
-        switch(this.#table[state].get(symbol)?.actionType) {
-            case 'SHIFT':
-                this.#conflicts.push({type: "SR", state, symbol});
-                break;
-            case 'REDUCE':
-                this.#conflicts.push({type: "RR", state, symbol});
-                break;
-            case undefined: break;
-            default:
-                console.log('unknown conflict')
+        let existingEntry = this.#table[state].get(symbol);
+        if(existingEntry instanceof ShiftEntry) {
+            this.#conflicts.push({type: "SR", state, symbol, nextState: existingEntry.nextState, rule});
         }
+        else if(existingEntry instanceof ReduceEntry) {
+            if(rule !== existingEntry.rule) {
+                this.#conflicts.push({type: "RR", state, symbol, rule1: rule, rule2: existingEntry.rule});
+            }
+        }
+        else if(existingEntry !== undefined) {
+            console.log(existingEntry);
+            this.#conflicts.push({type: "Unknown"})
+        }
+
         this.#table[state].set(symbol, new ReduceEntry(rule));
     }
 
@@ -69,9 +83,19 @@ export class ParsingTable {
      * @param {number} nextState
      */
     setActionShift(state, symbol, nextState) {
-        if(this.#table[state].has(symbol)) {
-            this.#conflicts.push({type: "SR", state, symbol});
+        let existingEntry = this.#table[state].get(symbol);
+        if(existingEntry instanceof ReduceEntry) {
+            this.#conflicts.push({type: "SR", state, symbol, nextState, rule: existingEntry.rule});
         }
+        else if(existingEntry instanceof ShiftEntry) {
+            if(nextState !== existingEntry.nextState) {
+                this.#conflicts.push({type: "SS"})
+            }
+        }
+        else if(existingEntry !== undefined) {
+            this.#conflicts.push({type: "Unknown"});
+        }
+
         this.#table[state].set(symbol, new ShiftEntry(nextState));
     }
 
@@ -92,6 +116,7 @@ export class ParsingTable {
         this.#table[state].set(symbol, new GotoEntry(n));
     }
 
+    /** @type {ParseConflict[]} */
     get conflicts() {
         return this.#conflicts;
     }
