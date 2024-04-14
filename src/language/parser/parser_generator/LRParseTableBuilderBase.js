@@ -5,7 +5,7 @@ import {ParsingTable} from "../lr_parser/ParsingTable.js";
 import {Item} from "./item/Item.js";
 import {ItemSet} from "./item/ItemSet.js";
 import {SymbolSet} from "./SymbolSet.js";
-import {SMap, SSet} from "../../util/FMap.js";
+import {FMap, SMap, SSet} from "../../util/FMap.js";
 
 export class LRParseTableBuilderBase {
     /** @type {ParsingTable} */
@@ -33,25 +33,40 @@ export class LRParseTableBuilderBase {
 
         console.log(`${conflicts.length} conflicts`, conflicts);
         {
+            /** @type {Set<Rule>} */
             let problematicRules = new Set();
             for(let x of conflicts){
+                // Rules from reducing
                 x.rule && problematicRules.add(x.rule);
                 x.rule1 && problematicRules.add(x.rule1);
                 x.rule2 && problematicRules.add(x.rule2);
+                // Rules from shifting
+                if(x.state) {
+                    for(const item of this.states.get(x.state)) {
+                        problematicRules.add(item.rule);
+                    }
+                }
             }
-            console.log(`Problematic rules:\n    ${[...problematicRules].join('\n    ')}`);
+            if(problematicRules.size){
+                console.log(`Problematic rules:\n    ${[...problematicRules].join('\n    ')}`);
+            }
 
             let reduceReduceConflicts = new Set();
             for(let x of conflicts.filter(i => i.type === 'RR')){
                 let rules = [x.rule1.toString(), x.rule2.toString()].sort();
                 reduceReduceConflicts.add(`${rules[0]}\n    with\n    ${rules[1]}\n    `);
             }
-            console.log(`Reduce-reduce conflicts:\n    ${[...reduceReduceConflicts].join('\n    ')}`);
+            if(reduceReduceConflicts.size){
+                console.log(`Reduce-reduce conflicts:\n    ${[...reduceReduceConflicts].join('\n    ')}`);
+            }
 
             let shiftReduceConflicts = new Set();
             for(let x of conflicts.filter(i => i.type === 'SR')){
-                const {nextState, rule} = x;
-                console.log(`Shift-reduce conflict on state ${nextState}:\n${rule} with ${this.states.get(nextState)}`)
+                const {state, rule} = x;
+                shiftReduceConflicts.add(`${rule}\n    on ${this.states.get(state).toString().split('\n').join('\n    ')}\n    `);
+            }
+            if(shiftReduceConflicts.size){
+                console.log(`Shift-reduce conflicts:\n    ${[...shiftReduceConflicts].join('\n    ')}`);
             }
         }
     }
@@ -210,10 +225,29 @@ export class LRParseTableBuilderBase {
      * @returns {ItemSet}
      */
     closure(itemSet){
-        const res = itemSet.copy();
+        const merged = itemSet.copy();
         for(/** @type {Item} */ const item of itemSet)
             for(/** @type {Item} */ const i of this.itemClosure(item))
-                res.add(i);
+                merged.add(i);
+
+        // Collapse itemSet to merge similar items
+
+        /** @type {SMap<ItemCore, SymbolSet>} */
+        const lookaheads = new SMap();
+        for(/** @type {Item} */ const item of merged) {
+            if (!lookaheads.has(item.core)) {
+                lookaheads.set(item.core, new SymbolSet);
+            }
+
+            for (/** @type {Symbol} */ const s of item.lookahead) {
+                lookaheads.get(item.core).add(s);
+            }
+        }
+
+        const res = new ItemSet();
+        for(const [/** @type {ItemCore} */ core, /** @type {SymbolSet} */ lookahead] of lookaheads) {
+            res.add(new Item(core.rule, core.pos, lookahead));
+        }
 
         res.lock();
 

@@ -225,7 +225,7 @@ export class Grammar {
     first(tkns) {
         if(tkns instanceof Symbol) return this.#firstSets.get(tkns);
 
-        // Follow set of empty token string is {epsilon}
+        // First set of empty token string is {epsilon}
         if (tkns.size === 0) return new Set([Symbol.__EPSILON__]);
 
         // Check result in cache

@@ -5,11 +5,12 @@ __WRAP__ raw-type := IDENTIFIER
 __WRAP__ raw-type := builtin-type
 template-params := < template-param-list >
 
-template-param-list := type
-__CHAIN__ template-param-list := template-param-list , type
+template-param-list := template-parameter
+__CHAIN__ template-param-list := template-param-list , template-parameter
+template-parameter := type
 
-non-void-type := raw-type
-non-void-type := raw-type template-params
+template := raw-type template-params
+
 
 unique-ptr := non-void-type *
 shared-ptr := non-void-type $
@@ -17,21 +18,30 @@ reference := non-void-type &
 nullable-unique-ptr := non-void-type * ?
 nullable-shared-ptr := non-void-type $ ?
 nullable-reference := non-void-type & ?
+
+ptr-type := unique-ptr
+ptr-type := shared-ptr
+ptr-type := reference
+ptr-type := nullable-unique-ptr
+ptr-type := nullable-shared-ptr
+ptr-type := nullable-reference
+
 mutable := non-void-type mut
-
-non-void-type := unique-ptr
-non-void-type := shared-ptr
-non-void-type := reference
-non-void-type := nullable-unique-ptr
-non-void-type := nullable-shared-ptr
-non-void-type := nullable-reference
-
-non-void-type := mutable
-
-non-void-type := ( non-void-type )
-
-non-void-type := unsized-array
-non-void-type := sized-array
 
 unsized-array := non-void-type [ ]
 sized-array := non-void-type [ expr ]
+
+basic-type := raw-type
+basic-type := template
+
+constructible-type := basic-type
+constructible-type := sized-array
+
+non-constructible-type := ptr-type
+non-constructible-type := mutable
+non-constructible-type := unsized-array
+
+non-void-type := constructible-type
+non-void-type := non-constructible-type
+
+non-void-type := ( non-void-type )

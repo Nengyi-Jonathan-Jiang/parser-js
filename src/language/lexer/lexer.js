@@ -2,6 +2,11 @@ import {Token, Symbol} from "../common/common.js";
 
 import {DFA_INITIAL_STATE, FSM_ERROR_STATE} from "./fsm/FiniteStateMachine.js";
 
+// One might think it overkill to write a regex algorithm from scratch
+// for lexing. However, I find that this algorithm performs demonstrably
+// faster than naive regex searching, simply because this algorithm is
+// more tuned to the needs of lexing as opposed to general regex search
+
 export class Lexer {
     /** @type {DFA} */
     #dfa;

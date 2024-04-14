@@ -12,12 +12,7 @@ export class ItemSet extends SSet {
     }
 
     lock() {
-        this.#repr += '{';
-
-        for(const it of this){
-            this.#repr += `\n\t${it}`;
-        }
-        this.#repr += "\n}";
+        this.#repr = `{\n    ${[...this].map(i => i.toString()).sort().join('\n    ')}\n}`;
     }
 
     toString(){

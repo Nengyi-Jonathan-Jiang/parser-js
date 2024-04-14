@@ -7,7 +7,6 @@ statement := block-statement
 statement := return-statement
 statement := expression-statement
 statement := declaration
-statement := class-declaration
 statement := if-statement
 statement := if-else-statement
 statement := loop
@@ -53,13 +52,9 @@ block-statement := { statements }
 
 print-statement := print expr ;
 print-statement := println expr ;
-print-statement := print STRING-LITERAL ;
-print-statement := println STRING-LITERAL ;
 
 variable-initialization := let IDENTIFIER : non-void-type = expr ;
 variable-declaration := let IDENTIFIER  : non-void-type ;
-variable-initialization := mut IDENTIFIER : non-void-type = expr ;
-variable-declaration := mut IDENTIFIER  : non-void-type ;
 
 class-declaration := class IDENTIFIER { class-body }
 

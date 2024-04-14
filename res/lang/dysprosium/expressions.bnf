@@ -1,4 +1,5 @@
 expr := prefix-expr
+expr := new-expr
 __CHAIN__ expr := expr op prefix-expr
 
 op := =
@@ -35,12 +36,15 @@ postfix-expr := access-expr
 postfix-op := --
 postfix-op := ++
 
-call-expr := postfix-expr ( )
-call-expr := postfix-expr ( argument-list )
+call-expr := postfix-expr ( optional-argument-list )
 index-expr := postfix-expr [ argument-list ]
-argument-list := expr
+
+optional-argument-list __EPSILON__
+optional-argument-list := argument-list
+
 __CHAIN__ argument-list := argument-list , argument
 __WRAP__ argument-list := argument
+
 __WRAP__ argument := expr
 
 access-expr := postfix-expr . IDENTIFIER
@@ -55,13 +59,13 @@ primary-expr := null
 primary-expr := IDENTIFIER
 primary-expr := ( expr )
 primary-expr := input-expr
-primary-expr := new-expr
 
-new-expr := new type ( argument-list )
-new-expr := new* type ( argument-list )
-new-expr := new$ type ( argument-list )
-new-expr := new type [ expr ]
-new-expr := new* type [ expr ]
-new-expr := new$ type [ expr ]
+new-expr := new constructible-type
+new-expr := new* constructible-type
+new-expr := new$ constructible-type
+
+new-expr := new basic-type ( optional-argument-list )
+new-expr := new* basic-type ( optional-argument-list )
+new-expr := new$ basic-type ( optional-argument-list )
 
 input-expr := input type

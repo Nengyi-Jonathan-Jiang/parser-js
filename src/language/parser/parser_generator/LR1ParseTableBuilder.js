@@ -39,21 +39,33 @@ export class LR1ParseTableBuilder extends LRParseTableBuilderBase {
             const newEdge = new ItemSet;
             
             for(/** @type {Item} */ const itm of edge){
+
+                if (itm.isFinished) continue;
+
                 const symbol = itm.next;
 
-                if(itm.isFinished || !this.grammar.nonTerminals.has(symbol)) continue;
+                if (!this.grammar.nonTerminals.has(symbol)) continue;
+
+                // Expand nonterminal production
 
                 const rest = itm.rule.rhs.substring(itm.pos + 1);
 
-                for(const r of this.grammar.getRules(symbol)){
-                    for(/** @type {Symbol} */ const lookahead of itm.lookahead){
-                        const newItem = new Item(r, 0, new SymbolSet(this.grammar.first(rest.concat(lookahead))));
-
-                        updated ||= !res.has(newItem);
-
-                        res.add(newItem);
-                        newEdge.add(newItem);
+                /** @type {SymbolSet<Symbol>} */
+                let newLookahead = new SymbolSet(this.grammar.first(rest));
+                if(newLookahead.has(Symbol.__EPSILON__)) {
+                    newLookahead.delete(Symbol.__EPSILON__);
+                    for(/** @type {Symbol} */ const lookahead of itm.lookahead) {
+                        newLookahead.add(lookahead);
                     }
+                }
+
+                for(const r of this.grammar.getRules(symbol)){
+                    const newItem = new Item(r, 0, newLookahead);
+
+                    updated ||= !res.has(newItem);
+
+                    res.add(newItem);
+                    newEdge.add(newItem);
                 }
             }
 
