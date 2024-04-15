@@ -1,7 +1,3 @@
-expr := prefix-expr
-expr := new-expr
-__CHAIN__ expr := expr op prefix-expr
-
 op := =
 op := +=
 op := -=
@@ -20,21 +16,32 @@ op := *
 op := /
 op := %
 
-address-of := # prefix-expr
-dereference := @ prefix-expr
+expr := prefix-expr
+expr := new-expr
+__CHAIN__ expr := expr op prefix-expr
 
 prefix-expr := address-of
 prefix-expr := dereference
+postfix-expr := pre-increment
+postfix-expr := pre-decrement
 prefix-expr := postfix-expr
 
-postfix-expr := primary-expr
-postfix-expr := postfix-expr postfix-op
+
+address-of := # prefix-expr
+dereference := @ prefix-expr
+
+pre-increment := ++ prefix-expr
+pre-decrement := -- prefix-expr
+
+postfix-expr := post-increment
+postfix-expr := post-decrement
 postfix-expr := call-expr
 postfix-expr := index-expr
 postfix-expr := access-expr
+postfix-expr := primary-expr
 
-postfix-op := --
-postfix-op := ++
+post-increment := postfix-expr ++
+post-decrement := postfix-expr --
 
 call-expr := postfix-expr ( optional-argument-list )
 index-expr := postfix-expr [ argument-list ]
@@ -60,12 +67,13 @@ primary-expr := IDENTIFIER
 primary-expr := ( expr )
 primary-expr := input-expr
 
-new-expr := new constructible-type
-new-expr := new* constructible-type
-new-expr := new$ constructible-type
+new-operator := new
+new-operator := new`
+new-operator := new$
 
-new-expr := new basic-type ( optional-argument-list )
-new-expr := new* basic-type ( optional-argument-list )
-new-expr := new$ basic-type ( optional-argument-list )
+new-default-expr := new-operator constructible-type
+
+new-expr := new-default-expr
+new-expr := new-operator basic-type ( optional-argument-list )
 
 input-expr := input type

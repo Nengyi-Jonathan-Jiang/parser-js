@@ -53,8 +53,9 @@ export class LRParseTableBuilderBase {
 
             let reduceReduceConflicts = new Set();
             for(let x of conflicts.filter(i => i.type === 'RR')){
-                let rules = [x.rule1.toString(), x.rule2.toString()].sort();
-                reduceReduceConflicts.add(`${rules[0]}\n    with\n    ${rules[1]}\n    `);
+                const {state} = x;
+                const rules = [x.rule1.toString(), x.rule2.toString()].sort();
+                reduceReduceConflicts.add(`${rules[0]}\n    with\n    ${rules[1]}\n    on ${this.states.get(state).toString().split('\n').join('\n    ')}\n    `);
             }
             if(reduceReduceConflicts.size){
                 console.log(`Reduce-reduce conflicts:\n    ${[...reduceReduceConflicts].join('\n    ')}`);

@@ -12,10 +12,10 @@ template-parameter := type
 template := raw-type template-params
 
 
-unique-ptr := non-void-type *
+unique-ptr := non-void-type `
 shared-ptr := non-void-type $
 reference := non-void-type &
-nullable-unique-ptr := non-void-type * ?
+nullable-unique-ptr := non-void-type ` ?
 nullable-shared-ptr := non-void-type $ ?
 nullable-reference := non-void-type & ?
 
