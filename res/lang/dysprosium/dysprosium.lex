@@ -74,7 +74,7 @@ input
 // New
 
 new
-new`
+new*
 new$
 
 // Error handling
@@ -108,7 +108,6 @@ catch
 
 =
 
-`
 $
 @
 +

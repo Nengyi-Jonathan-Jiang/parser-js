@@ -49,7 +49,7 @@ export class Symbol {
         return this.#name;
     }
 
-    static __EPSILON__ = Symbol.get('\x00');
-    static __START__ = Symbol.get('\x01');
-    static __EOF__ = Symbol.get('\x02');
+    static __EPSILON__ = Symbol.get('\x01EPSILON\x01');
+    static __START__ = Symbol.get('\x01START\x01');
+    static __EOF__ = Symbol.get('\x01END\x01');
 }

@@ -1,3 +1,6 @@
+expr := op-expr
+expr := new-expr
+
 op := =
 op := +=
 op := -=
@@ -16,9 +19,8 @@ op := *
 op := /
 op := %
 
-expr := prefix-expr
-expr := new-expr
-__CHAIN__ expr := expr op prefix-expr
+op-expr := prefix-expr
+__CHAIN__ op-expr := op-expr op prefix-expr
 
 prefix-expr := address-of
 prefix-expr := dereference
@@ -68,7 +70,7 @@ primary-expr := ( expr )
 primary-expr := input-expr
 
 new-operator := new
-new-operator := new`
+new-operator := new*
 new-operator := new$
 
 new-default-expr := new-operator constructible-type
