@@ -61,13 +61,19 @@ export class LRParseTableBuilderBase {
                 console.log(`Reduce-reduce conflicts:\n    ${[...reduceReduceConflicts].join('\n    ')}`);
             }
 
-            let shiftReduceConflicts = new Set();
+            let shiftReduceConflicts = new Map();
             for(let x of conflicts.filter(i => i.type === 'SR')){
-                const {state, rule} = x;
-                shiftReduceConflicts.add(`${rule}\n    on ${this.states.get(state).toString().split('\n').join('\n    ')}\n    `);
+                const {state, rule, symbol} = x;
+                let problemString = `${rule}\n    on {\n        ${
+                    [...this.states.get(state)].map(i => i.core).join('\n        ')
+                }\n    }`;
+
+                if(!shiftReduceConflicts.has(problemString)) shiftReduceConflicts.set(problemString, new Set());
+
+                shiftReduceConflicts.get(problemString).add(symbol);
             }
             if(shiftReduceConflicts.size){
-                console.log(`Shift-reduce conflicts:\n    ${[...shiftReduceConflicts].join('\n    ')}`);
+                console.log(`Shift-reduce conflicts:\n    ${[...shiftReduceConflicts].map(([str, s]) => str + ` with lookahead ${[...s].join(' ')}`).join('\n\n    ')}`);
             }
         }
     }

@@ -69,6 +69,8 @@ export function createParserFromFile(start_symbol, ...file_contents) {
 
     const grammar = new Grammar(rules, start_symbol);
 
+    window.grammar = grammar;
+
     const generator = new LR1ParseTableBuilder(grammar);
 
     const table = generator.table;

@@ -107,7 +107,7 @@ export class Grammar {
                 let brk = false;
 
                 for (const sym of rhs) {
-                    updated |= addAll(this.first(lhs), this.first(sym));
+                    updated |= addAll(this.#firstSets.get(lhs), this.first(sym));
 
                     if (!this.isNullable(sym)) {
                         brk = true;
@@ -125,7 +125,7 @@ export class Grammar {
 
                 for (let i = rhs.size - 1; i >= 0; i--) {
                     if (this.#nonTerminals.has(rhs.get(i))) {
-                        updated |= addAll(this.follow(rhs.get(i)), aux);
+                        updated |= addAll(this.#followSets.get(rhs.get(i)), aux);
                     }
                     if (this.isNullable(rhs.get(i))) {
                         aux = new Set(aux);
@@ -176,72 +176,72 @@ export class Grammar {
     }
 
     /**
-     * @param {Symbol|SymbolString} tkns
+     * @param {Symbol|SymbolString} symbols
      * @returns {boolean}
      */
-    isNullable(tkns) {
-        if(tkns instanceof Symbol) return this.#nullableSymbols.has(tkns);
+    isNullable(symbols) {
+        if(symbols instanceof Symbol) return this.#nullableSymbols.has(symbols);
 
-        if (tkns.size === 0) return true;
+        if (symbols.size === 0) return true;
 
-        for (const tkn of tkns)
+        for (const tkn of symbols)
             if (!this.isNullable(tkn))
                 return false;
         return true;
     }
 
     /**
-     * @param {SymbolString|Symbol} tkns
+     * @param {SymbolString|Symbol} symbols
      * @returns {ReadonlySet<Symbol>}
      */
-    follow(tkns) {
-        if(tkns instanceof Symbol) return this.#followSets.get(tkns);
+    follow(symbols) {
+        if(symbols instanceof Symbol) return this.#followSets.get(symbols);
 
         // Follow set of empty token string is {epsilon}
-        if (tkns.size === 0) return new Set([Symbol.__EPSILON__]);
+        if (symbols.size === 0) return new Set([Symbol.__EPSILON__]);
 
         // Check result in cache
-        if (this.#followCache.has(tkns)) return this.#followCache.get(tkns);
+        if (this.#followCache.has(symbols)) return this.#followCache.get(symbols);
 
         // Otherwise follow set of token string is follow set of last token
-        const res = new Set(this.follow(tkns.lastTkn));
+        const res = new Set(this.follow(symbols.lastTkn));
 
         // If last token is nullable, then also add the follow set of the rest
         // of the token string
-        if (this.#nullableSymbols.has(tkns.lastTkn)) {
-            addAll(res, this.follow(tkns.substring(0, tkns.size - 1)));
+        if (this.#nullableSymbols.has(symbols.lastTkn)) {
+            addAll(res, this.follow(symbols.substring(0, symbols.size - 1)));
         }
 
         // Cache result
-        this.#followCache.set(tkns, res);
+        this.#followCache.set(symbols, res);
 
         return res;
     }
 
     /**
-     * @param {SymbolString|Symbol} tkns
+     * @param {SymbolString|Symbol} symbols
      * @returns {ReadonlySet<Symbol>}
      */
-    first(tkns) {
-        if(tkns instanceof Symbol) return this.#firstSets.get(tkns);
+    first(symbols) {
+        if(symbols instanceof Symbol) return this.#firstSets.get(symbols);
 
         // First set of empty token string is {epsilon}
-        if (tkns.size === 0) return new Set([Symbol.__EPSILON__]);
+        if (symbols.size === 0) return new Set([Symbol.__EPSILON__]);
 
         // Check result in cache
-        if (this.#firstCache.has(tkns)) return this.#firstCache.get(tkns);
+        if (this.#firstCache.has(symbols)) return this.#firstCache.get(symbols);
 
         // Otherwise follow set of token string is follow set of last token
-        const res = new Set(this.first(tkns.firstTkn));
+        const res = new Set(this.first(symbols.firstTkn));
 
         // If last token is nullable, then also add the follow set of the rest
         // of the token string
-        if (this.#nullableSymbols.has(tkns.firstTkn)) {
-            addAll(res, this.first(tkns.substring(1)));
+        if (this.#nullableSymbols.has(symbols.firstTkn)) {
+            addAll(res, this.first(symbols.substring(1)));
         }
 
         // Cache result
-        this.#firstCache.set(tkns, res);
+        this.#firstCache.set(symbols, res);
 
         return res;
     }

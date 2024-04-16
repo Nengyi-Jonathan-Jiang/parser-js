@@ -5,8 +5,8 @@ file := module-declaration imports statements
 
 constructor-declaration := constructor parameter-list block-statement
 
-function-declaration := func IDENTIFIER parameter-list -> return type expr ;
-function-declaration := func IDENTIFIER parameter-list -> type block-statement
+function-declaration := func IDENTIFIER parameter-list -> return non-void-type expr ;
+function-declaration := func IDENTIFIER parameter-list -> type simple-statement
 parameter-list := ( )
 parameter-list := ( parameters )
 

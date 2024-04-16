@@ -121,7 +121,7 @@ export class Item {
     }
 
     #calculateRepr() {
-        return this.#core.toString() + `\t ${[...this.lookahead].map(i => `${i}`).join(' ')}`;
+        return this.#core.toString() + `\t ${[...this.lookahead].map(i => `${i}`).sort().join(' ')}`;
     }
 
     toString() {

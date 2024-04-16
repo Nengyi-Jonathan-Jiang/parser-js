@@ -28,7 +28,6 @@ postfix-expr := pre-increment
 postfix-expr := pre-decrement
 prefix-expr := postfix-expr
 
-
 address-of := # prefix-expr
 dereference := @ prefix-expr
 
@@ -78,4 +77,4 @@ new-default-expr := new-operator constructible-type
 new-expr := new-default-expr
 new-expr := new-operator basic-type ( optional-argument-list )
 
-input-expr := input type
+input-expr := input < type >
