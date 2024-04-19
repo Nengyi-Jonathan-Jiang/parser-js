@@ -1,0 +1,94 @@
+declaration := basic-function-declaration
+declaration := variable-declaration
+declaration := variable-initialization
+declaration := class-declaration
+declaration := abstract-class-declaration
+declaration := interface-declaration
+declaration := interface-implementation
+
+static-declaration := static declaration
+
+variable := IDENTIFIER : non-void-type
+
+variable-initialization := let variable = expr ;
+variable-declaration := let variable ;
+
+function-header := func decl-name parameter-list optional-mut
+function-header := func . decl-name optional-mut
+
+basic-function-declaration := function-header -> return non-void-type expr ;
+basic-function-declaration := function-header -> type simple-statement
+virtual-function-declaration := virtual basic-function-declaration
+override-function-declaration := override basic-function-declaration
+abstract-function-declaration := abstract function-header -> type ;
+
+parameter-list := ( )
+parameter-list := ( parameters )
+
+__WRAP__ parameters := variable
+__CHAIN__ parameters := parameters , variable
+
+// Class body must not contain abstract functions
+class-body-statement := visibility-modifier declaration
+class-body-statement := visibility-modifier static-declaration
+class-body-statement := visibility-modifier virtual-function-declaration
+class-body-statement := visibility-modifier override-function-declaration
+
+// Interfaces must contain only functions.
+interface-body-statement := visibility-modifier static-declaration
+interface-body-statement := visibility-modifier abstract-function-declaration
+interface-body-statement := visibility-modifier override-function-declaration
+interface-body-statement := visibility-modifier virtual-function-declaration
+
+// Abstract classes may contain both class body statements and interface
+abstract-body-statement := visibility-modifier declaration
+abstract-body-statement := visibility-modifier static-declaration
+abstract-body-statement := visibility-modifier abstract-function-declaration
+abstract-body-statement := visibility-modifier override-function-declaration
+abstract-body-statement := visibility-modifier virtual-function-declaration
+
+// Implementations may contain only overrides
+implementation-body-statement := visibility-modifier override-function-declaration
+
+
+class-declaration := class decl-name optional-extends { class-body }
+abstract-class-declaration := abstract class decl-name optional-extends { abstract-body }
+interface-declaration := interface decl-name optional-extends { interface-body }
+interface-implementation := implement basic-type for decl-name { implementation-body }
+
+__CHAIN__ class-body := class-body class-body-statement
+class-body __EPSILON__
+
+__CHAIN__ abstract-body := abstract-body abstract-body-statement
+abstract-body __EPSILON__
+
+__CHAIN__ interface-body := interface-body interface-body-statement
+interface-body __EPSILON__
+
+__CHAIN__ implementation-body := implementation-body implementation-body-statement
+implementation-body __EPSILON__
+
+optional-mut __EPSILON__
+optional-mut := mut
+
+visibility-modifier := public
+visibility-modifier := private
+visibility-modifier := protected
+
+optional-extends __EPSILON__
+optional-extends := extends basic-type
+
+decl-name := IDENTIFIER
+decl-name := IDENTIFIER template-decl
+
+template-decl := < template-arguments >
+__WRAP__ template-arguments := template-argument
+__CHAIN__ template-arguments := template-arguments , template-argument
+template-argument := class decl-name
+template-argument := class decl-name extends type-constraint
+type-constraint := ( extends-list )
+__WRAP__ type-constraint := basic-type
+template-argument := type
+
+__WRAP__ extends-list := basic-type
+__CHAIN__ extends-list := extends-list , basic-type

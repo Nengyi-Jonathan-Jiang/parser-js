@@ -11,16 +11,12 @@ statement := loop-else
 statement := loop-exit-statement
 statement := nothing-statement
 statement := export-statement
+statement := typedef-statement
 
 simple-statement := print-statement
 simple-statement := block-statement
 simple-statement := return-statement
 simple-statement := expression-statement
-
-declaration := function-declaration
-declaration := variable-declaration
-declaration := variable-initialization
-declaration := class-declaration
 
 export-statement := export declaration
 
@@ -53,18 +49,4 @@ block-statement := { statements }
 print-statement := print expr ;
 print-statement := println expr ;
 
-variable-initialization := let IDENTIFIER : non-void-type = expr ;
-variable-declaration := let IDENTIFIER  : non-void-type ;
-
-class-declaration := class IDENTIFIER { class-body }
-
-__CHAIN__ class-body := class-body class-body-statement
-class-body __EPSILON__
-
-class-body-statement := visibility-modifier declaration
-class-body-statement := visibility-modifier constructor-declaration
-class-body-statement := visibility-modifier static declaration
-
-visibility-modifier := public
-visibility-modifier := private
-visibility-modifier := protected
+typedef-statement := typedef decl-name = type ;

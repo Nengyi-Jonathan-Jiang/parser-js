@@ -24,8 +24,8 @@ __CHAIN__ op-expr := op-expr op prefix-expr
 
 prefix-expr := address-of
 prefix-expr := dereference
-postfix-expr := pre-increment
-postfix-expr := pre-decrement
+prefix-expr := pre-increment
+prefix-expr := pre-decrement
 prefix-expr := postfix-expr
 
 address-of := # prefix-expr
@@ -40,6 +40,8 @@ postfix-expr := call-expr
 postfix-expr := index-expr
 postfix-expr := access-expr
 postfix-expr := primary-expr
+
+postfix-expr := postfix-expr as < type >
 
 post-increment := postfix-expr ++
 post-decrement := postfix-expr --

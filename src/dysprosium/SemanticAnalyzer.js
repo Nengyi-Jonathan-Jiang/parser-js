@@ -25,7 +25,7 @@ export function dysprosiumAnalyzer(parseTree) {
         const module_name = name_parts.map(i => i.value).join('');
         const exports = statements.filter(i => i.type === Symbol.get('export-statement'));
 
-        // console.log(module_name, exports);
+        console.log(module_name, exports);
     }
 
     // Resolve types

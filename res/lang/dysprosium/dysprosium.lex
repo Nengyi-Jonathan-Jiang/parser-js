@@ -20,7 +20,6 @@ export
 
 // Types
 
-type
 typedef
 void
 null
@@ -36,15 +35,15 @@ enum
 mut
 :
 static
-constructor
 operator
-implicit
 this
 
 // Inheritance
 
 interface
 abstract
+virtual
+override
 extends
 implement
 

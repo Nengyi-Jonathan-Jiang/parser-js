@@ -21,7 +21,7 @@
 
 .token>span:last-child {
     display: none;
-    color: #888;
+    color: #aaa;
 }
 
 .token>span:last-child::after,
