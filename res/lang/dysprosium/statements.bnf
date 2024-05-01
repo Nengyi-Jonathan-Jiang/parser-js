@@ -18,7 +18,7 @@ simple-statement := block-statement
 simple-statement := return-statement
 simple-statement := expression-statement
 
-export-statement := export declaration
+export-statement := export exportable-declaration
 
 if-else-statement := if-statement else-clause
 

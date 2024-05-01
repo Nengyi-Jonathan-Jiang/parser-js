@@ -1,9 +1,11 @@
-declaration := basic-function-declaration
-declaration := variable-declaration
-declaration := variable-initialization
-declaration := class-declaration
-declaration := abstract-class-declaration
-declaration := interface-declaration
+exportable-declaration := basic-function-declaration
+exportable-declaration := variable-declaration
+exportable-declaration := variable-initialization
+exportable-declaration := class-declaration
+exportable-declaration := abstract-class-declaration
+exportable-declaration := interface-declaration
+
+declaration := exportable-declaration
 declaration := interface-implementation
 
 static-declaration := static declaration
@@ -15,6 +17,8 @@ variable-declaration := let variable ;
 
 function-header := func decl-name parameter-list optional-mut
 function-header := func . decl-name optional-mut
+
+// lambda-function := lambda decl-name
 
 basic-function-declaration := function-header -> return non-void-type expr ;
 basic-function-declaration := function-header -> type simple-statement
