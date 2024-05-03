@@ -1,8 +1,3 @@
-import {Token, Symbol} from '../src/language/common/common.js';
-import {createLexerFromFile, createParserFromFile} from "../src/language/util/FileLoader.js";
-import {Lexer} from "../src/language/lexer/lexer.js";
-import {LRParser} from "../src/language/parser/lr_parser/LRParser.js";
-
 /** @type {Lexer} */
 let lexer;
 /** @type {LRParser} */
