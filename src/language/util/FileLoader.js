@@ -8,24 +8,30 @@ import {LR1ParseTableBuilder} from "../parser/parser_generator/LR1ParseTableBuil
 import {LRParser} from "../parser/lr_parser/LRParser.js";
 import {Lexer} from "../lexer/lexer.js";
 
-export function createLexerFromFile(file_contents, ignored_symbols) {
+export function createLexerFromFile(file_contents) {
+    const ignored = [];
     const lex_rules = file_contents
         .trim()
         .split(/\s*\n\s*/g)
         .filter(i => !i.startsWith('//'))
         .map(i => i.split(':='))
-        .map(([a, b]) => ({
-            nfa: Regex.parse(
-                b?.trim() ?? a.trim().replaceAll(/[()[+*?.\]]/g, '\\$&')
-            ).compile(), symbol: Symbol.get(a.trim())
-        }));
+        .map(([a, b]) => {
+            if(a.startsWith('__IGNORED__ ')) {
+                a = a.replace('__IGNORED__', '').trim();
+                ignored.push(a);
+            }
+
+            return ({
+                nfa: Regex.parse(
+                    b?.trim() ?? a.trim().replaceAll(/[()[+*?.\]\\]/g, '\\$&')
+                ).compile(),
+                symbol: Symbol.get(a.trim())
+            });
+        });
 
     const dfa = compileToDFA(...lex_rules);
 
-    return new Lexer(dfa, [
-        Symbol.get('COMMENT'),
-        Symbol.get('WHITESPACE')
-    ]);
+    return new Lexer(dfa, ignored.map(i => Symbol.get(i)));
 }
 
 /**

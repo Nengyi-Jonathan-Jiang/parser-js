@@ -1,0 +1,56 @@
+@font-face {
+    font-family: "JetBrains Mono";
+    font-style: normal;
+    src: url("../res/font/JetbrainsMono/Regular.ttf");
+}
+@font-face {
+    font-family: "JetBrains Mono";
+    font-style: italic;
+    src: url("../res/font/JetbrainsMono/Italic.ttf");
+}
+
+* {
+    box-sizing: border-box;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
+}
+
+body {
+    margin: 0;
+    padding: 10px;
+    width: 100vw;
+    height: 100vh;
+}
+
+:is(.h-pane, .v-pane, .leaf-pane) {
+    flex-basis: 1px;
+    flex-grow: 1;
+    min-width: 0;
+    position: relative;
+    /*overflow: hidden;*/
+}
+
+.h-pane>:not(:first-child) {
+    margin-left: 10px;
+}
+.v-pane>:not(:first-child) {
+    margin-top: 10px;
+}
+
+.h-pane, .v-pane {
+    width: 100%;
+    height: 100%;
+    display: flex;
+}
+
+.h-pane {
+    flex-direction: row;
+}
+.v-pane {
+    flex-direction: column;
+}
+.leaf-pane {
+    outline: 1px solid black;
+    overflow: auto;
+    padding: 5px;
+}

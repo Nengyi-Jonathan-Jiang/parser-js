@@ -1,0 +1,79 @@
+#parse-output > .parse-tree-node {
+    margin-left: .5em;
+    margin-top:  .3em;
+}
+
+.parse-tree-node {
+    position:        relative;
+    outline:         1px solid #aaa;
+    width:           fit-content;
+
+    padding:         0 .5em .5em 1em;
+    margin:          0 .5em .5em -1em;
+
+    display:         flex;
+    flex-direction:  column;
+    justify-content: center;
+}
+
+.token + .parse-tree-node {
+    margin-top: .5em;
+}
+
+.parse-tree-node + .parse-tree-node {
+    margin-top: 1em;
+}
+
+.parse-tree-node:has(>div:empty) {
+    padding: 0 1em 0 1em;
+}
+
+
+.parse-tree-node:not(:has(>div:empty)) > span {
+    margin-bottom: .25em;
+}
+
+.parse-tree-node:has(>div:empty) > span > input {
+    display: none;
+}
+
+
+.parse-tree-node > div:last-child {
+    padding-left: 1em;
+    /*display: flex;*/
+    /*flex-direction: column;*/
+}
+
+.parse-tree-node input[type=checkbox] {
+    appearance:         none;
+    -webkit-appearance: none;
+
+    margin:             0;
+}
+
+.parse-tree-node input[type=checkbox]::before {
+    content:  "";
+    width:    0;
+    height:   0;
+
+    border:   .334em solid transparent;
+
+    display:  block;
+    position: absolute;
+    top:      .334em;
+    left:     .3em;
+}
+
+.parse-tree-node input[type=checkbox]:not(:checked)::before {
+    border-left-color: black;
+    transform:         translateX(.167em);
+}
+
+.parse-tree-node input[type=checkbox]:checked::before {
+    border-top-color: black;
+    transform:        translateY(.167em);
+}
+
+.parse-tree-node:has(>span>input[type=checkbox]:not(:checked)) > div:last-child {
+    display: none;
+}

@@ -1,0 +1,41 @@
+<!doctype HTML>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport"
+			  content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>Title</title>
+
+		<link rel="stylesheet" type="text/css" href="common.css">
+		<link rel="stylesheet" type="text/css" href="style.css">
+		<link rel="stylesheet" type="text/css" href="tokens-output.css">
+		<link rel="stylesheet" type="text/css" href="parse-output.css">
+	</head>
+	<body>
+		<div class="h-pane">
+			<div class="v-pane">
+				<div id="lexer" class="leaf-pane">
+					<label for="lexer-input">
+						<textarea spellcheck="false" id="lexer-input" placeholder="Enter lexer here..." wrap="off"></textarea>
+					</label>
+				</div>
+				<div id="grammar" class="leaf-pane">
+					<label for="grammar-input">
+						<textarea spellcheck="false" id="grammar-input" placeholder="Enter grammar here..." wrap="off"></textarea>
+					</label>
+				</div>
+			</div>
+			<div id="code-input-container" class="leaf-pane">
+				<label for="code-input">
+					<textarea spellcheck="false" id="code-input" placeholder="Enter code here..." wrap="off"></textarea>
+				</label>
+			</div>
+			<div class="leaf-pane">
+				<div id="parse-output"></div>
+			</div>
+		</div>
+
+		<script src="script.js" type="module"></script>
+	</body>
+</html>

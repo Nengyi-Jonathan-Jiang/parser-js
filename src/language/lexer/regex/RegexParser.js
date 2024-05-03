@@ -94,6 +94,7 @@ class RegexParser {
     }
 
     get result() {
+		if(this.#stack.length !== 1) throw new Error("Failed to parse lexer");
         return this.#stack[0];
     }
 }
@@ -166,7 +167,7 @@ export function parseRegex(src) {
 					i++;
 				}
 
-				while ((c = src[++i]) !== ']') {
+				while (i < src.length && (c = src[++i]) !== ']') {
 					const addedLetters = c === '\\' ?
 						charsForEscape(src[++i]) :
 						[c];

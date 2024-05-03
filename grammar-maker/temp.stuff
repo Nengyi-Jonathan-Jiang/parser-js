@@ -1,0 +1,65 @@
+text := "([^\\"])*"
+
+number := \d+
+letter-variable:= \l
+
+__IGNORED__ WHITESPACE := [\n ]+
+
+__IGNORED__ \int
+
+__IGNORED__ {
+__IGNORED__ }
+__IGNORED__ _
+__IGNORED__ ^
+__IGNORED__ (
+__IGNORED__ )
+__IGNORED__ [
+__IGNORED__ ]
+other := .
+
+
+// Grammar
+
+program := statements
+
+statements __EPSILON__
+__CHAIN__ statements := statements other
+__CHAIN__ statements := statements items
+
+items __EPSILON__
+items := items item
+
+__WRAP__ item := text
+__WRAP__ item := letter-variable
+__WRAP__ item := number
+
+// Text
+"Recall that most well-behaved functions can be expressed as the limit of a sequence of polynomials (Taylor series). This suggests that the powers of x may be used as a basis. In this problem, we will define the inner product of two functions "
+f
+" and "
+g
+" to be "
+
+\int_^{-1}{1} f(x)g(x)dx
+
+".
+
+1) Show that the powers of x do not form an orthogonal basis."
+
+""
+
+"However, we can find a sequence of polynomials "P_n(x)" (one of each degree) that form an orthogonal basis."
+
+""
+
+"2) Find and normalize " P_0(x),  P_1(x),  P_2(x),  "and " P_3(x)
+
+""
+
+"3) Find the general form of "P_n(x)". Hint: " P_n(x) " is orthogonal to all "P_{m<n}" iff "P_n(x)" is orthogonal to all polynomials "Q(x)" with degree less than "n" (why?)"
+
+""
+
+"4) Find " a_n " such that " e^x = a_0P_0(x) + a_1P_1(x)+a_2P_2(x)+  . . .  + a_nP_n(x)  +  . . .
+
+""

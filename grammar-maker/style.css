@@ -1,0 +1,30 @@
+#grammar, #lexer {
+    padding: 0;
+    overflow: hidden;
+}
+
+#code-input-container {
+    flex-grow: 2;
+    padding: 0;
+    overflow: hidden;
+}
+
+#code-input, #grammar-input, #lexer-input {
+    outline: none;
+    border: none;
+    width: 100%;
+    height: 100%;
+    resize: none;
+    overflow: auto;
+    padding: 5px;
+}
+
+#parse-output, #tokens-output {
+    user-select: none;
+    white-space: pre;
+}
+
+#parse-output:empty::before {
+    content: "Output will appear here";
+    color: #666;
+}
