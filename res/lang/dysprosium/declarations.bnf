@@ -7,6 +7,7 @@ exportable-declaration := interface-declaration
 
 declaration := exportable-declaration
 declaration := interface-implementation
+declaration := enum-declaration
 
 static-declaration := static declaration
 
@@ -25,6 +26,7 @@ basic-function-declaration := function-header -> type simple-statement
 virtual-function-declaration := virtual basic-function-declaration
 override-function-declaration := override basic-function-declaration
 abstract-function-declaration := abstract function-header -> type ;
+constructor-declaration := constructor parameter-list block-statement
 
 parameter-list := ( )
 parameter-list := ( parameters )
@@ -37,6 +39,7 @@ class-body-statement := visibility-modifier declaration
 class-body-statement := visibility-modifier static-declaration
 class-body-statement := visibility-modifier virtual-function-declaration
 class-body-statement := visibility-modifier override-function-declaration
+class-body-statement := visibility-modifier constructor-declaration
 
 // Interfaces must contain only functions.
 interface-body-statement := visibility-modifier static-declaration
@@ -50,6 +53,7 @@ abstract-body-statement := visibility-modifier static-declaration
 abstract-body-statement := visibility-modifier abstract-function-declaration
 abstract-body-statement := visibility-modifier override-function-declaration
 abstract-body-statement := visibility-modifier virtual-function-declaration
+abstract-body-statement := visibility-modifier constructor-declaration
 
 // Implementations may contain only overrides
 implementation-body-statement := visibility-modifier override-function-declaration
@@ -59,6 +63,7 @@ class-declaration := class decl-name optional-extends { class-body }
 abstract-class-declaration := abstract class decl-name optional-extends { abstract-body }
 interface-declaration := interface decl-name optional-extends { interface-body }
 interface-implementation := implement basic-type for decl-name { implementation-body }
+enum-declaration := enum IDENTIFIER { enum-body }
 
 __CHAIN__ class-body := class-body class-body-statement
 class-body __EPSILON__
@@ -71,6 +76,12 @@ interface-body __EPSILON__
 
 __CHAIN__ implementation-body := implementation-body implementation-body-statement
 implementation-body __EPSILON__
+
+enum-body := enum-inits ; class-body
+__WRAP__ enum-inits := enum-init
+__CHAIN__ enum-inits := enum-inits , enum-init
+enum-init := IDENTIFIER
+enum-init := IDENTIFIER ( optional-list )
 
 optional-mut __EPSILON__
 optional-mut := mut
@@ -86,13 +97,41 @@ decl-name := IDENTIFIER
 decl-name := IDENTIFIER template-decl
 
 template-decl := < template-arguments >
-__WRAP__ template-arguments := template-argument
-__CHAIN__ template-arguments := template-arguments , template-argument
-template-argument := class decl-name
-template-argument := class decl-name extends type-constraint
+
+template-arguments := required-template-arguments
+template-arguments := optional-template-arguments
+template-arguments := required-template-arguments , optional-template-arguments
+
+__WRAP__ required-template-arguments := template-argument
+__CHAIN__ required-template-arguments := required-template-arguments , template-argument
+
+__WRAP__ optional-template-arguments := optional-template-argument
+__CHAIN__ optional-template-arguments := optional-template-arguments , optional-template-argument
+
+template-argument := template-type-argument
+template-argument := template-func-argument
+template-argument := template-int-argument
+template-argument := template-parameter
+
+optional-template-argument := optional-template-type-argument
+optional-template-argument := optional-template-func-argument
+optional-template-argument := optional-template-int-argument
+
+template-type-argument := class decl-name optional-type-constraint
+template-func-argument := func IDENTIFIER ( non-void-type-list ) -> type
+template-func-argument := func IDENTIFIER ( ) -> type
+template-int-argument := type IDENTIFIER
+optional-template-type-argument := template-type-argument = template-parameter
+optional-template-func-argument := template-func-argument = template-parameter
+optional-template-int-argument := template-int-argument = template-parameter
+
+optional-type-constraint __EPSILON__
+optional-type-constraint := extends type-constraint
 type-constraint := ( extends-list )
 __WRAP__ type-constraint := basic-type
-template-argument := type
 
 __WRAP__ extends-list := basic-type
 __CHAIN__ extends-list := extends-list , basic-type
+
+__WRAP__ non-void-type-list := non-void-type
+__CHAIN__ non-void-type-list := non-void-type-list , non-void-type

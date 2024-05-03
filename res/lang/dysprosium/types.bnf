@@ -8,9 +8,15 @@ template-params := < template-param-list >
 template-param-list := template-parameter
 __CHAIN__ template-param-list := template-param-list , template-parameter
 template-parameter := type
+template-parameter := INT-LITERAL
+template-parameter := BOOL-LITERAL
+template-parameter := STRING-LITERAL
+template-parameter := CHAR-LITERAL
+template-parameter := FLOAT-LITERAL
+
+template-parameter := expression ( expr )
 
 template := raw-type template-params
-
 
 unique-ptr := non-void-type *
 shared-ptr := non-void-type $

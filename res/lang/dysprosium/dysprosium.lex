@@ -33,9 +33,11 @@ func
 let
 enum
 mut
+expression
 :
 static
 operator
+constructor
 this
 
 // Inheritance

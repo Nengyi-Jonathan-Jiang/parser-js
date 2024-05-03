@@ -10,6 +10,25 @@ class FirstPassModuleInfo {
     }
 }
 
+export class Entity {
+    /** @type {string} */
+    #fullName;
+    /** @type {string} */
+    #name;
+
+    #id = 0;
+    get nextID() { return Entity.#id; }
+
+    constructor(fullName) {
+        this.#fullName = fullName;
+        this.#name = this.#fullName.split('.').pop();
+    }
+}
+
+export class Type extends Entity {
+
+}
+
 /** @param {AbstractSyntaxTree} parseTree */
 export function dysprosiumAnalyzer(parseTree) {
     // Top level MUST be "program"

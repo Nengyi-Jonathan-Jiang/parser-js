@@ -48,12 +48,6 @@ p-expr := IDENTIFIER
 p-expr := ( expr )
 `.trim();
 
-// try { lexer = createLexerFromFile(lexer_input.value) }
-// catch (e) { console.error(e) }
-// try { parser = createParserFromFile(Symbol.get('program'), grammar_input.value) }
-// catch (e) { console.error(e) }
-// update_all();
-
 /**
  * @param {Token} token
  * @returns {HTMLElement}
@@ -153,7 +147,7 @@ window.onkeydown = e => {
     if(e.ctrlKey && e.key === 's') {
         e.preventDefault();
         parser = createParserFromFile(
-            Symbol.get('program'),
+            JSymbol.get('program'),
             grammar_input.value
         )
         update_all();

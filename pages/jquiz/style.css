@@ -1,0 +1,29 @@
+#code-input-container {
+    flex-grow: 2;
+    padding: 0;
+    overflow: hidden;
+}
+
+#code-input {
+    outline: none;
+    border: none;
+    width: 100%;
+    height: 100%;
+    resize: none;
+    overflow: auto;
+    padding: 5px;
+}
+
+#parse-output, #tokens-output, #assembled-output {
+    user-select: none;
+    white-space: pre;
+}
+
+#parse-output:empty::before {
+    content: "Parse tree will appear here";
+    color: #aaa;
+}
+#tokens-output:empty::before {
+    content: "Token output will appear here";
+    color: #aaa;
+}

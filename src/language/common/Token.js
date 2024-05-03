@@ -12,6 +12,9 @@ export class Token {
     /** @type {string} */
     #value;
 
+    /** @type { Object }*/
+    data = {};
+
     /**
      * @param {Symbol} type The type of the token
      * @param {string} value The string contents of the token
