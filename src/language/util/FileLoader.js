@@ -23,7 +23,7 @@ export function createLexerFromFile(file_contents) {
 
             return ({
                 nfa: Regex.parse(
-                    b?.trim() ?? a.trim().replaceAll(/[()[+*?.\]\\]/g, '\\$&')
+                    b?.trim() ?? a.trim().replaceAll(/[()[+*?.\]|\\]/g, '\\$&')
                 ).compile(),
                 symbol: Symbol.get(a.trim())
             });
