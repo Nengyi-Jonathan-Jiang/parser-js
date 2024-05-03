@@ -1,39 +1,61 @@
 text := "([^\\"])*"
 
-number := \d+
+number := -?(\d+(\.\d*)?|\.\d+)
 letter-variable:= \l
 
 __IGNORED__ WHITESPACE := [\n ]+
 
 __IGNORED__ \int
 
-__IGNORED__ {
-__IGNORED__ }
+{
+}
+
+(
+[
+\{
+\(|
+)
+
 __IGNORED__ _
 __IGNORED__ ^
-__IGNORED__ (
-__IGNORED__ )
-__IGNORED__ [
-__IGNORED__ ]
-other := .
+
+__IGNORED__ other := .
 
 
 // Grammar
 
-program := statements
-
-statements __EPSILON__
-__CHAIN__ statements := statements other
-__CHAIN__ statements := statements items
+program := items
 
 items __EPSILON__
-items := items item
+__CHAIN__ items := items item
 
 __WRAP__ item := text
 __WRAP__ item := letter-variable
 __WRAP__ item := number
 
+__WRAP__ item := { items }
+
+
+
+__WRAP__ item := left items right
+left := (
+left := [
+left := \{
+left := \(|
+left := \(||
+right := )
+left := ]
+left := \}
+left := \|)
+left := \||)
+
 // Text
+
+(1)
+[2)
+\{3)
+\(|4)
+
 "Recall that most well-behaved functions can be expressed as the limit of a sequence of polynomials (Taylor series). This suggests that the powers of x may be used as a basis. In this problem, we will define the inner product of two functions "
 f
 " and "
