@@ -1,19 +1,9 @@
 program __EPSILON__
 __CHAIN__ program := program file
 
+__WRAP__ qualified-identifier := IDENTIFIER
+__CHAIN__ qualified-identifier := qualified-identifier . IDENTIFIER
+
 file := module-declaration imports statements
 
 constructor-declaration := constructor parameter-list block-statement
-
-function-declaration := func IDENTIFIER parameter-list -> return type expr ;
-function-declaration := func IDENTIFIER parameter-list -> type block-statement
-parameter-list := ( )
-parameter-list := ( parameters )
-
-__WRAP__ parameters := parameter
-__CHAIN__ parameters := parameters , parameter
-
-parameter := IDENTIFIER : non-void-type
-parameter := & IDENTIFIER : non-void-type
-parameter := var IDENTIFIER : non-void-type
-parameter := var & IDENTIFIER : non-void-type

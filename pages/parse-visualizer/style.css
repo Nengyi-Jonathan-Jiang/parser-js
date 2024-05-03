@@ -11,6 +11,7 @@
     height: 100%;
     resize: none;
     overflow: auto;
+    padding: 5px;
 }
 
 #parse-output, #tokens-output, #assembled-output {
@@ -20,9 +21,9 @@
 
 #parse-output:empty::before {
     content: "Parse tree will appear here";
-    color: #666;
+    color: #aaa;
 }
 #tokens-output:empty::before {
     content: "Token output will appear here";
-    color: #666;
+    color: #aaa;
 }

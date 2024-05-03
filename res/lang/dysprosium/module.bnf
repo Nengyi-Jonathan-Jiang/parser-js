@@ -1,9 +1,6 @@
 // Modules and imports
 
-module-declaration := module module-name ;
-
-__WRAP__ module-name := IDENTIFIER
-__CHAIN__ module-name := module-name . IDENTIFIER
+module-declaration := module qualified-identifier ;
 
 imports __EPSILON__
 __CHAIN__ imports := imports import
@@ -14,9 +11,9 @@ import-clause := module-import-clause
 import-clause := wildcard-import-clause
 import-clause := specific-import-clause
 
-module-import-clause := module-name
-wildcard-import-clause := * from module-name
-specific-import-clause := { import-list } from module-name
+module-import-clause := qualified-identifier
+wildcard-import-clause := * from qualified-identifier
+specific-import-clause := { import-list } from qualified-identifier
 
 __WRAP__ import-list := specific-import
 __CHAIN__ import-list := import-list , specific-import

@@ -16,6 +16,7 @@ const combined_parse_file = [
     await fetchTextContents('../../res/lang/dysprosium/module.bnf'),
     await fetchTextContents('../../res/lang/dysprosium/types.bnf'),
     await fetchTextContents('../../res/lang/dysprosium/statements.bnf'),
+    await fetchTextContents('../../res/lang/dysprosium/declarations.bnf'),
     await fetchTextContents('../../res/lang/dysprosium/expressions.bnf'),
 ].join('\n');
 

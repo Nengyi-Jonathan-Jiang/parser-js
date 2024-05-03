@@ -18,14 +18,29 @@ export function dysprosiumAnalyzer(parseTree) {
     /** @type {Map<string, Map<string, "var"|"func"|"class">>} */
     const first_pass_info = new Map;
 
-    // Resolve exports (functions, variables, classes)
+    // Resolve exports (values, classes)
     for(let module of parseTree.children) {
-        const [[,[...name_parts]],, [...statements]] = module.children;
+        const [[,[...module_name_parts]],, [...statements]] = module.children;
 
-        const module_name = name_parts.map(i => i.value).join('');
-        const exports = statements.filter(i => i.type === Symbol.get('export-statement'));
+        const module_name = module_name_parts.map(i => i.value).join('');
+        const exports = statements.filter(i => i.type === Symbol.get('export-statement')).map(i => i.children[1]).map(i => {
+            let exportType, exportName;
+            switch (i.type.name) {
+                case "variable-declaration":
+                case "variable-initialization":
+                    break;
+                case "basic-function-declaration":
+                    break;
+                case "class-declaration":
+                case "interface-declaration":
+                    break;
+                case "abstract-class-declaration":
+                    break;
+            }
+            return i;
+        });
 
-        // console.log(module_name, exports);
+        console.log(module_name, exports);
     }
 
     // Resolve types

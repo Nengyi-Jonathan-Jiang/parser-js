@@ -1,48 +1,58 @@
-#parse-output>.parse-tree-node {
-    margin-left: .5em;
-    margin-top: .3em;
-}
-
 .parse-tree-node {
     position: relative;
-    outline: 1px solid #aaa;
     width: fit-content;
-
-    padding: 0 .5em .5em 1em;
-    margin: 0 .5em .5em -1em;
 
     display: flex;
     flex-direction: column;
     justify-content: center;
 }
 
-.token + .parse-tree-node {
-    margin-top: .5em;
+.parse-tree-node span {
+    background-color: white;
+    width: fit-content;
 }
 
-.parse-tree-node + .parse-tree-node {
-    margin-top: 1em;
+.parse-tree-node>div:has(.parse-tree-node>div:not(:empty))>:is(.token:first-child, .parse-tree-node + .token) {
+    margin-left: 1em;
 }
 
-.parse-tree-node:has(>div:empty) {
-    padding: 0 1em 0 1em;
+.parse-tree-node:has(>span+div:not(:empty)) {
+    padding-bottom: 1em;
+    padding-right: 1em;
 }
 
-
-
-.parse-tree-node:not(:has(>div:empty))>span {
-    margin-bottom: .25em;
+.parse-tree-node:has(>span+div:not(:empty))::before {
+    content: "";
+    width: calc(100%);
+    height: calc(100% - 1.25em);
+    outline: 1px solid #ddd;
+    top: .7em;
+    left: .6em;
+    display: block;
+    position: absolute;
+    z-index: -10;
 }
 
 .parse-tree-node:has(>div:empty)>span>input {
     display: none;
 }
 
+.parse-tree-node>div:has(>.parse-tree-node>div:not(:empty))>.parse-tree-node:has(>div:empty) {
+    margin-left: 1em;
+}
+
+.parse-tree-node:has(>div:empty)>span::after {
+    content: " (ε)";
+    color: #aaa;
+}
+
+.parse-tree-node:not(:has(>div:empty))>span {
+    padding-left: 1em;
+    padding-right: .5ex;
+}
 
 .parse-tree-node>div:last-child {
     padding-left: 1em;
-    /*display: flex;*/
-    /*flex-direction: column;*/
 }
 
 .parse-tree-node input[type=checkbox] {

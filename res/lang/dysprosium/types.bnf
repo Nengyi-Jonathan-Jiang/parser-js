@@ -1,7 +1,7 @@
 type := non-void-type
 type := void
 
-__WRAP__ raw-type := IDENTIFIER
+__WRAP__ raw-type := qualified-identifier
 __WRAP__ raw-type := builtin-type
 template-params := < template-param-list >
 
@@ -28,18 +28,18 @@ ptr-type := nullable-reference
 
 mutable := non-void-type mut
 
-unsized-array := non-void-type [ ]
-sized-array := non-void-type [ expr ]
+unsized-array-of := non-void-type [ ]
+sized-array-of := non-void-type [ expr ]
 
 basic-type := raw-type
 basic-type := template
 
 constructible-type := basic-type
-constructible-type := sized-array
+constructible-type := sized-array-of
 
 non-constructible-type := ptr-type
 non-constructible-type := mutable
-non-constructible-type := unsized-array
+non-constructible-type := unsized-array-of
 
 non-void-type := constructible-type
 non-void-type := non-constructible-type

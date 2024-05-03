@@ -2,10 +2,7 @@
 statements __EPSILON__
 __CHAIN__ statements := statements statement
 
-statement := print-statement
-statement := block-statement
-statement := return-statement
-statement := expression-statement
+statement := simple-statement
 statement := declaration
 statement := if-statement
 statement := if-else-statement
@@ -14,18 +11,19 @@ statement := loop-else
 statement := loop-exit-statement
 statement := nothing-statement
 statement := export-statement
+statement := typedef-statement
 
-declaration := function-declaration
-declaration := variable-declaration
-declaration := variable-initialization
-declaration := class-declaration
+simple-statement := print-statement
+simple-statement := block-statement
+simple-statement := return-statement
+simple-statement := expression-statement
 
-export-statement := export declaration
+export-statement := export exportable-declaration
 
 if-else-statement := if-statement else-clause
 
-if-statement := if ( expr ) statement
-else-clause := else statement
+if-statement := if ( expr ) simple-statement
+else-clause := else simple-statement
 
 loop-exit := break
 loop-exit := continue
@@ -39,12 +37,10 @@ loop := until-loop
 loop := for-loop
 loop := foreach-loop
 
-while-loop := while ( expr ) loop-body
-until-loop := until ( expr ) loop-body
+while-loop := while ( expr ) simple-statement
+until-loop := until ( expr ) simple-statement
 
-__WRAP__ loop-body := statement
-
-for-loop := for ( variable-initialization expr ; expr ) statement
+for-loop := for ( variable-initialization expr ; expr ) simple-statement
 
 expression-statement := expr ;
 return-statement := return expr ;
@@ -53,18 +49,4 @@ block-statement := { statements }
 print-statement := print expr ;
 print-statement := println expr ;
 
-variable-initialization := let IDENTIFIER : non-void-type = expr ;
-variable-declaration := let IDENTIFIER  : non-void-type ;
-
-class-declaration := class IDENTIFIER { class-body }
-
-__CHAIN__ class-body := class-body class-body-statement
-class-body __EPSILON__
-
-class-body-statement := visibility-modifier declaration
-class-body-statement := visibility-modifier constructor-declaration
-class-body-statement := visibility-modifier static declaration
-
-visibility-modifier := public
-visibility-modifier := private
-visibility-modifier := protected
+typedef-statement := typedef decl-name = type ;

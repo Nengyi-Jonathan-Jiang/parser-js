@@ -2,6 +2,7 @@
 
   - Dysprosium is supposed to be a sort of mix between C++, Java,
   and Rust
+  - All functions are actually secretly function pointers (first class functions)
   - Strongly, statically typed
   - For simplicity, one "dbyte" = 32 bits (int and float size).
   This is the minimum addressable word size. Characters are also 
