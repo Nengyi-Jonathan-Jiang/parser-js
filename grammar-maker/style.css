@@ -1,12 +1,15 @@
-#grammar, #lexer {
+#grammar, #lexer, #code-input-container {
     padding: 0;
     overflow: hidden;
 }
 
-#code-input-container {
+:is(#left, #parse, #code-input-container, #lexer, #grammar) {
+    flex-grow: 1;
+    transition: flex-grow .5s;
+}
+
+:is(#left, #parse, #code-input-container, #lexer, #grammar):focus-within {
     flex-grow: 2;
-    padding: 0;
-    overflow: hidden;
 }
 
 #code-input, #grammar-input, #lexer-input {

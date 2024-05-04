@@ -27,7 +27,6 @@ body {
     flex-grow: 1;
     min-width: 0;
     position: relative;
-    /*overflow: hidden;*/
 }
 
 .h-pane>:not(:first-child) {

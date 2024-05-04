@@ -48,6 +48,8 @@ p-expr := IDENTIFIER
 p-expr := ( expr )
 `.trim();
 
+updateLexer();
+
 /**
  * @param {Token} token
  * @returns {HTMLElement}
@@ -126,8 +128,7 @@ code_input.oninput = _ => {
     update_all();
 }
 
-lexer_input.oninput = _ => {
-    window.localStorage.setItem('l', lexer_input.value);
+function updateLexer() {
     try {
         lexer = createLexerFromFile(lexer_input.value);
     }
@@ -136,6 +137,11 @@ lexer_input.oninput = _ => {
         console.log(e.toString());
         lexer = e.toString();
     }
+}
+
+lexer_input.oninput = _ => {
+    window.localStorage.setItem('l', lexer_input.value);
+    updateLexer();
     update_all();
 }
 

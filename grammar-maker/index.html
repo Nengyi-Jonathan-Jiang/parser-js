@@ -14,7 +14,7 @@
 	</head>
 	<body>
 		<div class="h-pane">
-			<div class="v-pane">
+			<div class="v-pane" id="left">
 				<div id="lexer" class="leaf-pane">
 					<label for="lexer-input">
 						<textarea spellcheck="false" id="lexer-input" placeholder="Enter lexer here..." wrap="off"></textarea>
@@ -31,8 +31,8 @@
 					<textarea spellcheck="false" id="code-input" placeholder="Enter code here..." wrap="off"></textarea>
 				</label>
 			</div>
-			<div class="leaf-pane">
-				<div id="parse-output"></div>
+			<div class="leaf-pane" id="parse">
+				<div id="parse-output" tabindex="0"></div>
 			</div>
 		</div>
 
