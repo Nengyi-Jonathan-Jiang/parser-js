@@ -1,3 +1,3 @@
 export * from './AbstractSyntaxTree.js';
-export * from './Symbol.js';
+export * from './JSymbol.js';
 export * from './Token.js';

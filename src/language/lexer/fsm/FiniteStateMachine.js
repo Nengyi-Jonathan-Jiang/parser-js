@@ -1,4 +1,4 @@
-import {Symbol} from "../../common/Symbol.js";
+import {JSymbol} from "../../common/JSymbol.js";
 
 export const FSM_ERROR_STATE = Number.POSITIVE_INFINITY;
 export const DFA_INITIAL_STATE = 0;
@@ -21,14 +21,14 @@ export class DFA {
     /** @type {Map<number, DFATableEntry>} */
     #transitionTable = new Map;
 
-    /** @type {Map<number, Symbol>}*/
+    /** @type {Map<number, JSymbol>}*/
     #accepting_states = new Map;
 
     get transitionTable() {
         return this.#transitionTable;
     }
 
-    /** @type {Map<number, Symbol>} */
+    /** @type {Map<number, JSymbol>} */
     get acceptingStates() {
         return this.#accepting_states;
     }
@@ -302,7 +302,7 @@ function printTable(t) {
         for (const c of all_chars) {
             if (transitions.has(c)) {
                 let s = transitions.get(c);
-                if (!s[window.Symbol.iterator]) s = new Set([s]);
+                if (!s[Symbol.iterator]) s = new Set([s]);
 
                 for (const to of s) {
                     res += (

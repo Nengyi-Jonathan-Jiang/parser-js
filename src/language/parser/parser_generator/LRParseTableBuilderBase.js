@@ -1,4 +1,4 @@
-import {Symbol} from "../../common/Symbol.js";
+import {JSymbol} from "../../common/JSymbol.js";
 import {Grammar} from "../grammar/Grammar.js";
 import {ParsingTable} from "../lr_parser/ParsingTable.js";
 
@@ -17,7 +17,7 @@ export class LRParseTableBuilderBase {
     /** @type {Map<number, ItemSet>} */
     states;
 
-    /** @type {Map<number, Map<Symbol, number>>} */
+    /** @type {Map<number, Map<JSymbol, number>>} */
     successors;
 
     /**
@@ -31,7 +31,18 @@ export class LRParseTableBuilderBase {
 
         const conflicts = this.table.conflicts;
 
-        console.log(`${conflicts.length} conflicts`, conflicts);
+        const loggedItems = [];
+
+        loggedItems.push(`Compiled grammar to LR Parser with ${this.states.size} states,`)
+
+        if(conflicts.length){
+            loggedItems.push(`${conflicts.length} conflict${conflicts.length === 1 ? '' : 's'}`);
+            loggedItems.push(conflicts);
+        }
+        else {
+            loggedItems.push('no conflicts');
+        }
+        console.log(...loggedItems);
         {
             /** @type {Set<Rule>} */
             let problematicRules = new Set();
@@ -80,11 +91,9 @@ export class LRParseTableBuilderBase {
 
     /** Generates the parsing table */
     generateParsingTable(){
-        console.log("Generating parsing table entries...");
+        // console.log("Generating parsing table entries...");
 
         this.table = new ParsingTable(this.configuratingSets.size);
-
-        let i = 0;
         for(const [itemSet, state] of this.configuratingSets.entries()){
             // Generate Action table
             this.generateActionSetEntries(state, itemSet);
@@ -95,12 +104,12 @@ export class LRParseTableBuilderBase {
     }
 
     get startItem(){
-        return new Item(this.grammar.startRule, 0, new SymbolSet(this.grammar.follow(Symbol.__START__)));
+        return new Item(this.grammar.startRule, 0, new SymbolSet(this.grammar.follow(JSymbol.__START__)));
     }
 
     /** Compute all configurating sets */
     generateConfiguratingSets(){
-        console.log("Generating configurating sets...");
+        // console.log("Generating configurating sets...");
 
         this.configuratingSets = new SMap;
         this.successors = new Map;
@@ -142,7 +151,7 @@ export class LRParseTableBuilderBase {
     /**
      * Tries to add a configurating set to the family of configurating sets and returns true if something was updated
      * @param {number} state
-     * @param {Symbol} symbol
+     * @param {JSymbol} symbol
      * @param {ItemSet} successor
      */
     addConfiguratingState(state, symbol, successor){
@@ -152,7 +161,7 @@ export class LRParseTableBuilderBase {
             this.configuratingSets.set(successor, newState);
             this.states.set(newState, successor);
             this.successors.get(state).set(symbol, newState);
-            console.log(`Found ${this.configuratingSets.size}th configurating set (${successor.size} items)`);
+            // console.log(`Found ${this.configuratingSets.size}th configurating set (${successor.size} items)`);
             return true;
         }
         else{
@@ -170,7 +179,7 @@ export class LRParseTableBuilderBase {
     generateActionSetEntries(state, itemSet){
         for(/** @type {Item} */ const item of itemSet){
             if(item.isFinished && item.rule.toString() === this.grammar.startRule.toString()){
-                this.table.setActionAccept(state, Symbol.__EOF__);
+                this.table.setActionAccept(state, JSymbol.__EOF__);
             }
             else if(item.isFinished){
                 this.generateReductions(state, item);
@@ -246,7 +255,7 @@ export class LRParseTableBuilderBase {
                 lookaheads.set(item.core, new SymbolSet);
             }
 
-            for (/** @type {Symbol} */ const s of item.lookahead) {
+            for (/** @type {JSymbol} */ const s of item.lookahead) {
                 lookaheads.get(item.core).add(s);
             }
         }

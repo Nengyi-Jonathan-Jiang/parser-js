@@ -1,7 +1,20 @@
+import {Lexer} from "../src/language/lexer/lexer.js";
+import {LRParser} from "../src/language/parser/lr_parser/LRParser.js";
+import {Token} from "../src/language/common/Token.js";
+import {JSymbol} from "../src/language/common/JSymbol.js";
+import {createLexerFromFile} from "../src/language/util/FileLoader.js";
+import {createParserFromFile} from "../src/language/util/FileLoader.js";
+
+let __NEXTINPUTNAME = 0;
+
 /** @type {Lexer} */
 let lexer;
 /** @type {LRParser} */
 let parser;
+
+let shouldReverseTokens = () => {
+    return grammar_input.value.includes("__REVERSED__");
+};
 
 /** @type {HTMLTextAreaElement} */
 const code_input = document.getElementById('code-input');
@@ -81,6 +94,7 @@ function update_parse_tree(parseTree) {
         const button = document.createElement('input');
         button.setAttribute('type', 'checkbox');
         button.setAttribute('checked', '');
+        button.setAttribute('name', '_' + ++__NEXTINPUTNAME);
 
         top.append(button);
         top.append(new Text(treeNode.type.name));
@@ -88,7 +102,11 @@ function update_parse_tree(parseTree) {
         el.appendChild(top);
 
         const children_container = document.createElement('div');
-        children_container.append(...treeNode.children.map(generate_element));
+        let children_elements = treeNode.children.map(generate_element);
+
+        if(shouldReverseTokens()) children_elements.reverse();
+
+        children_container.append(...children_elements);
 
         el.appendChild(children_container);
 
@@ -110,7 +128,8 @@ function update_all(){
         return;
     }
 
-    const tokens = lexer.lex(input);
+    let tokens = lexer.lex(input);
+    if(shouldReverseTokens()) tokens = [... tokens.slice(0, tokens.length - 1).toReversed(), tokens[tokens.length - 1]];
 
     let parseTree;
 
@@ -152,11 +171,15 @@ grammar_input.oninput = _ => {
 window.onkeydown = e => {
     if(e.ctrlKey && e.key === 's') {
         e.preventDefault();
-        parser = createParserFromFile(
-            JSymbol.get('program'),
-            grammar_input.value
-        )
-        update_all();
+
+        try {
+            parser = createParserFromFile(grammar_input.value)
+            update_all();
+        }
+        catch (e) {
+            parse_output.innerText = "INVALID GRAMMAR: " + e.message;
+            console.warn(e);
+        }
     }
 }
 

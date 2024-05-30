@@ -1,14 +1,14 @@
-import {Symbol} from "../common/Symbol.js";
+import {JSymbol} from "../common/JSymbol.js";
 
 // noinspection JSClosureCompilerSyntax
-/** @implements {Iterable<Symbol>} */
+/** @implements {Iterable<JSymbol>} */
 export class SymbolString {
-    /** @type {Symbol[]} */
+    /** @type {JSymbol[]} */
     #symbols;
     /** @type {string} */
     #_str;
 
-    /** @param {Symbol} symbols */
+    /** @param {JSymbol} symbols */
     constructor(...symbols) {
         this.#symbols = symbols;
         this.#_str = symbols.join(' ');
@@ -16,18 +16,18 @@ export class SymbolString {
 
     /**
      * @param {number} i
-     * @returns {Symbol}
+     * @returns {JSymbol}
      */
     get(i){
         return this.#symbols[i]
     }
 
-    /** @return {Symbol|null} */
+    /** @return {JSymbol|null} */
     get firstTkn(){
         return this.#symbols[0] ?? null
     }
 
-    /** @return {Symbol|null} */
+    /** @return {JSymbol|null} */
     get lastTkn(){
         return this.#symbols[this.#symbols.length - 1] ?? null
     }
@@ -35,7 +35,7 @@ export class SymbolString {
     /** @type {number} */
     get size(){return this.#symbols.length;}
 
-    /** @type {Symbol[]} */
+    /** @type {JSymbol[]} */
     get symbols() {
         return this.#symbols;
     }
@@ -54,21 +54,21 @@ export class SymbolString {
         return new SymbolString(...[...this.symbols].splice(start, end - start));
     }
 
-    /** @type {IterableIterator[Symbol]} */
-    [window.Symbol.iterator](){
+    /** @type {IterableIterator[JSymbol]} */
+    [Symbol.iterator](){
         // noinspection JSValidateTypes
-        return this.symbols[window.Symbol.iterator]();
+        return this.symbols[Symbol.iterator]();
     }
 
     /**
-     * @param {Symbol} symbol
+     * @param {JSymbol} symbol
      * @return {SymbolString}
      */
     concat (symbol){
         return new SymbolString(...this, symbol);
     }
 
-    /** @param {function(Symbol) : any} func */
+    /** @param {function(JSymbol) : any} func */
     forEach(func) {
         this.symbols.forEach(func);
     }

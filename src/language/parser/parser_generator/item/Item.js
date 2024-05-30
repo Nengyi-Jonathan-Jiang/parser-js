@@ -1,5 +1,5 @@
 import {Rule} from "../../ParseRule.js";
-import {Symbol} from "../../../common/Symbol.js";
+import {JSymbol} from "../../../common/JSymbol.js";
 import {SymbolSet} from "../SymbolSet.js";
 
 export class ItemCore {
@@ -36,7 +36,7 @@ export class ItemCore {
         return this.pos >= this.rule.rhs.size;
     }
 
-    /** @type {Symbol|null} */
+    /** @type {JSymbol|null} */
     get next() {
         if (this.isFinished) return null;
         return this.rule.rhs.get(this.pos);
@@ -99,7 +99,7 @@ export class Item {
         return this.#core.isFinished;
     }
 
-    /** @type {Symbol|null} */
+    /** @type {JSymbol|null} */
     get next() {
         return this.#core.next;
     }

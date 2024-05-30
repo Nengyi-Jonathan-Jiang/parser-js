@@ -1,87 +1,180 @@
-text := "([^\\"])*"
+radical-prefix := meth|eth|prop|but
+shared-prefix := (pent|hex|hept|oct|non)(adec)?|(un|do|tri|tetra)?dec
+multiplier-prefix := di|tri|tetra
 
-number := -?(\d+(\.\d*)?|\.\d+)
-letter-variable:= \l
+halogen := fluoro|chloro|bromo|iodo
+hydroxy
+ol
+mercapto
+thiol
+imine
+imino
+oxo
+one
+formyl
+al
+carboxy
+carboxylic-acid-suffix := (carboxyl|o)ic acid
+amide
+amido
 
-__IGNORED__ WHITESPACE := [\n ]+
+position := [123456789]\d*
 
-__IGNORED__ \int
+a
+e
 
-{
-}
+an
+en
+yn
 
-(
+yl
+
+cyclo
+
 [
-\{
-\(|
-)
+]
 
-__IGNORED__ _
-__IGNORED__ ^
+,
+-
 
-__IGNORED__ other := .
+__IGNORED__ UNKNOWN := [^\s]
+
+__IGNORED__ COMMENT := //[^\n]*
+
+///////////////////////////////////////////////////////
+
+__ACCEPTS__ items
+
+> items := __WRAP__ item
+> items := __UNWRAP__ items item
+
+> single-position := position __DISCARD__ "-"
+> positions := single-position
+             | position __DISCARD__ "," __UNWRAP__ positions
+
+> radical := cyclo ? ( shared-prefix | radical-prefix )
+
+> mandatory-multiplier := __WRAP__ multiplier-prefix
+                        | shared-prefix a
+
+> multiplier := ( __DISCARD__ "-" positions ) ? mandatory-multiplier
+              | __DISCARD__ "-" single-position
+              | __EPSILON__
+
+> multi-bonds := an-bond
+               | en-bond
+               | yn-bond
+               | en-bond yn-bond
+               | __EPSILON__
+
+> en-bond := multiplier en
+> yn-bond := multiplier yn
+// an-bond := an
+
+> item := ramifications ? simple-item
+
+> radical-with-multi-bonds := radical multi-bonds
+
+> simple-item := radical-with-multi-bonds suffix-group
+
+> suffix-group := e
+
+> suffix-group := an multiplier suffix
+
+> suffix := ol
+          | thiol
+          | imine
+          | one
+          | al
+          | carboxylic-acid-suffix
+          | amide
+          | e
+
+> ramifications := ( __UNWRAP__ ramifications __DISCARD__ "-" ) ? ramification
+
+> subramifications := __DISCARD__ "[" ramifications __DISCARD__ "]"
+> ramification := positions ? __WRAP__ ramification-body
+
+> ramification-body := mandatory-multiplier ? ramified-group
+
+> ramified-group := subramifications group
+> ramified-group := group
+
+> group := radical-with-multi-bonds yl
+> group := halogen 
+> group := hydroxy 
+> group := mercapto 
+> group := imino 
+> group := oxo 
+> group := formyl 
+> group := carboxy 
+> group := amido
 
 
-// Grammar
-
-program := items
-
-items __EPSILON__
-__CHAIN__ items := items item
-
-__WRAP__ item := text
-__WRAP__ item := letter-variable
-__WRAP__ item := number
-
-__WRAP__ item := { items }
 
 
+/////////////////////////////////////////
 
-__WRAP__ item := left items right
-left := (
-left := [
-left := \{
-left := \(|
-left := \(||
-right := )
-left := ]
-left := \}
-left := \|)
-left := \||)
 
-// Text
+// Simple alkanes
+methane ethane  propane; butane  pentane  hexane  dodecane
 
-(1)
-[2)
-\{3)
-\(|4)
+// Ramifications
+2-methylbutane  2,3,5-trimethylbutane
 
-"Recall that most well-behaved functions can be expressed as the limit of a sequence of polynomials (Taylor series). This suggests that the powers of x may be used as a basis. In this problem, we will define the inner product of two functions "
-f
-" and "
-g
-" to be "
+// Multiple ramifications
+3-ethyl-2,5-dimethylhexane
 
-\int_^{-1}{1} f(x)g(x)dx
+// Cyclo- prefix
+cyclobutane
+2,7-dicyclobutyloctane
+1-ethylcyclobutane
 
-".
+// Multiple bonds
+hex-2-ene
+hex-1,4-diene
+tridec-4,10-dien-2,6,8-triyne
 
-1) Show that the powers of x do not form an orthogonal basis."
+// Multiple bonds in ramification
+4-hept-2,4-dienylundec-9-en-2,5-diyne
 
-""
+// Subramification
+1-[3-propyl]heptylcyclobutane
+1,2-di[3-propyl]heptylcyclobutane
+1,2-di[1-ethyl-3-[2-methyl]propyl]heptylcyclobutane
 
-"However, we can find a sequence of polynomials "P_n(x)" (one of each degree) that form an orthogonal basis."
+// Halogen groups
+1-fluoropentane
+2-chloropentane
+1,1-dibromo-4-chloropentane
 
-""
+// Alcohols
+pentanol
+pentan-2-ol
+3-[1-hydroxy]methylpentan-1,4-diol
 
-"2) Find and normalize " P_0(x),  P_1(x),  P_2(x),  "and " P_3(x)
+// Thiols
+pentan-2-thiol
+3-[2-mercapto]ethylpentan-1,4-diol
 
-""
+// Imines
+pentan-2-imine
+2-iminopentan-3-ol
 
-"3) Find the general form of "P_n(x)". Hint: " P_n(x) " is orthogonal to all "P_{m<n}" iff "P_n(x)" is orthogonal to all polynomials "Q(x)" with degree less than "n" (why?)"
+// Ketones
+pentan-2-one
+4-[1-oxo]ethylheptan-2,6-dione
 
-""
+// Aldehydes
+pentanal
+4-[1-formyl]methylheptandial
 
-"4) Find " a_n " such that " e^x = a_0P_0(x) + a_1P_1(x)+a_2P_2(x)+  . . .  + a_nP_n(x)  +  . . .
+// Carboxylic acid
+ethanoic acid
+ethancarboxylic acid
+4-carboxyheptan-1,7-dioic acid
 
-""
+// Amides
+methanamide
+pentan-3-amide
+5-amidopentanoic acid

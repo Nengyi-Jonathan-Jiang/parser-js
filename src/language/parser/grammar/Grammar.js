@@ -1,4 +1,4 @@
-import {Symbol} from "../../common/Symbol.js";
+import {JSymbol} from "../../common/JSymbol.js";
 import {Rule} from "../ParseRule.js";
 import {SymbolString} from "../SymbolString.js";
 import {SymbolSet} from "../parser_generator/SymbolSet.js";
@@ -27,44 +27,44 @@ export class Grammar {
     /** @type {Rule} */
     #startRule;
 
-    /** @type {Map<Symbol, Rule[]>} */
+    /** @type {Map<JSymbol, Rule[]>} */
     #startsWith = new Map;
-    /** @type {Set<Symbol>} */
+    /** @type {Set<JSymbol>} */
     #allSymbols = new Set;
-    /** @type {Set<Symbol>} */
+    /** @type {Set<JSymbol>} */
     #terminals = new Set;
-    /** @type {Set<Symbol>} */
+    /** @type {Set<JSymbol>} */
     #nonTerminals = new Set;
-    /** @type {Set<Symbol>} */
+    /** @type {Set<JSymbol>} */
     #nullableSymbols = new Set;
 
-    /** @type {Map<Symbol, Set<Symbol>>} */
+    /** @type {Map<JSymbol, Set<JSymbol>>} */
     #firstSets = new Map;
-    /** @type {Map<Symbol, Set<Symbol>>} */
+    /** @type {Map<JSymbol, Set<JSymbol>>} */
     #followSets = new Map;
 
-    /** @type {SMap<SymbolString, Set<Symbol>>} */
+    /** @type {SMap<SymbolString, Set<JSymbol>>} */
     #firstCache = new SMap;
-    /** @type {SMap<SymbolString, Set<Symbol>>} */
+    /** @type {SMap<SymbolString, Set<JSymbol>>} */
     #followCache = new SMap;
 
     /**
      * @param {Rule[]} rules
-     * @param {Symbol} startSymbol
+     * @param {JSymbol} startSymbol
      */
     constructor(rules, startSymbol) {
         this.#rules = rules;
 
         // Augment the grammar
-        this.#startRule = new Rule(Symbol.__START__, new SymbolString(startSymbol), false, true);
+        this.#startRule = new Rule(JSymbol.__START__, new SymbolString(startSymbol));
         this.#rules.push(this.#startRule);
 
         // Classify symbols as terminals or nonterminals
 
-        this.#allSymbols.add(Symbol.__START__);
-        this.#allSymbols.add(Symbol.__EOF__);
+        this.#allSymbols.add(JSymbol.__START__);
+        this.#allSymbols.add(JSymbol.__EOF__);
 
-        this.#nonTerminals.add(Symbol.__START__);
+        this.#nonTerminals.add(JSymbol.__START__);
 
         for (const rule of this.#rules) {
             this.#nonTerminals.add(rule.lhs);
@@ -94,7 +94,7 @@ export class Grammar {
             }
         }
 
-        this.#followSets.get(Symbol.__START__).add(Symbol.__EOF__);
+        this.#followSets.get(JSymbol.__START__).add(JSymbol.__EOF__);
 
         // Calculate FIRST sets, FOLLOW sets, and the set of nullable symbols
 
@@ -143,7 +143,7 @@ export class Grammar {
     }
 
     /**
-     * @param {Symbol} sym
+     * @param {JSymbol} sym
      * @returns {ReadonlyArray<Rule>}
      */
     getRules(sym) {
@@ -151,17 +151,17 @@ export class Grammar {
         return this.#startsWith.get(sym);
     }
 
-    /** @type {ReadonlySet<Symbol>} */
+    /** @type {ReadonlySet<JSymbol>} */
     get allSymbols() {
         return this.#allSymbols;
     }
 
-    /** @type {ReadonlySet<Symbol>} */
+    /** @type {ReadonlySet<JSymbol>} */
     get nonTerminals() {
         return this.#nonTerminals;
     }
 
-    /** @type {ReadonlySet<Symbol>} */
+    /** @type {ReadonlySet<JSymbol>} */
     get terminals() {
         return this.#terminals;
     }
@@ -176,11 +176,11 @@ export class Grammar {
     }
 
     /**
-     * @param {Symbol|SymbolString} symbols
+     * @param {JSymbol|SymbolString} symbols
      * @returns {boolean}
      */
     isNullable(symbols) {
-        if(symbols instanceof Symbol) return this.#nullableSymbols.has(symbols);
+        if(symbols instanceof JSymbol) return this.#nullableSymbols.has(symbols);
 
         if (symbols.size === 0) return true;
 
@@ -191,14 +191,14 @@ export class Grammar {
     }
 
     /**
-     * @param {SymbolString|Symbol} symbols
-     * @returns {ReadonlySet<Symbol>}
+     * @param {SymbolString|JSymbol} symbols
+     * @returns {ReadonlySet<JSymbol>}
      */
     follow(symbols) {
-        if(symbols instanceof Symbol) return this.#followSets.get(symbols);
+        if(symbols instanceof JSymbol) return this.#followSets.get(symbols);
 
         // Follow set of empty token string is {epsilon}
-        if (symbols.size === 0) return new Set([Symbol.__EPSILON__]);
+        if (symbols.size === 0) return new Set([JSymbol.__EPSILON__]);
 
         // Check result in cache
         if (this.#followCache.has(symbols)) return this.#followCache.get(symbols);
@@ -219,14 +219,14 @@ export class Grammar {
     }
 
     /**
-     * @param {SymbolString|Symbol} symbols
-     * @returns {ReadonlySet<Symbol>}
+     * @param {SymbolString|JSymbol} symbols
+     * @returns {ReadonlySet<JSymbol>}
      */
     first(symbols) {
-        if(symbols instanceof Symbol) return this.#firstSets.get(symbols);
+        if(symbols instanceof JSymbol) return this.#firstSets.get(symbols);
 
         // First set of empty token string is {epsilon}
-        if (symbols.size === 0) return new Set([Symbol.__EPSILON__]);
+        if (symbols.size === 0) return new Set([JSymbol.__EPSILON__]);
 
         // Check result in cache
         if (this.#firstCache.has(symbols)) return this.#firstCache.get(symbols);

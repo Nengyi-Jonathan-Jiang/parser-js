@@ -1,19 +1,19 @@
 import {Rule} from "../ParseRule.js";
-import {Symbol} from "../../common/Symbol.js";
+import {JSymbol} from "../../common/JSymbol.js";
 import {SymbolString} from "../SymbolString.js";
 
 /**
  * @export
  * @typedef {
- *      {type: "SR", state: number, symbol: Symbol, nextState: number, rule: Rule} |
- *      {type: "RR", state: number, symbol: Symbol, rule1: Rule, rule2: Rule} |
+ *      {type: "SR", state: number, symbol: JSymbol, nextState: number, rule: Rule} |
+ *      {type: "RR", state: number, symbol: JSymbol, rule1: Rule, rule2: Rule} |
  *      {type: "SS" } |
  *      {type: "Unknown"}
  * } ParseConflict
  */
 
 export class ParsingTable {
-    /** @type {Map<Symbol, TableEntry>[]} */
+    /** @type {Map<JSymbol, TableEntry>[]} */
     #table;
     /** @type {number} */
     #numStates;
@@ -29,7 +29,7 @@ export class ParsingTable {
 
     /**
      * @param {number} state
-     * @param {Symbol} symbol
+     * @param {JSymbol} symbol
      * @return {TableEntry}
      */
     getAction(state, symbol) {
@@ -38,7 +38,7 @@ export class ParsingTable {
 
     /**
      * @param {number} state
-     * @return {Set<Symbol>}
+     * @return {Set<JSymbol>}
      */
     acceptableSymbolsAtState(state) {
         return new Set(this.#table[state].keys());
@@ -46,7 +46,7 @@ export class ParsingTable {
 
     /**
      * @param {number} state
-     * @param {Symbol} symbol
+     * @param {JSymbol} symbol
      * @return {GotoEntry}
      */
     getGoto(state, symbol) {
@@ -56,7 +56,7 @@ export class ParsingTable {
 
     /**
      * @param {number} state
-     * @param {Symbol} symbol
+     * @param {JSymbol} symbol
      * @param {Rule} rule
      */
     setActionReduce(state, symbol, rule) {
@@ -79,7 +79,7 @@ export class ParsingTable {
 
     /**
      * @param {number} state
-     * @param {Symbol} symbol
+     * @param {JSymbol} symbol
      * @param {number} nextState
      */
     setActionShift(state, symbol, nextState) {
@@ -101,7 +101,7 @@ export class ParsingTable {
 
     /**
      * @param {number} state
-     * @param {Symbol} symbol
+     * @param {JSymbol} symbol
      */
     setActionAccept(state, symbol) {
         this.#table[state].set(symbol, new AcceptEntry);
@@ -109,7 +109,7 @@ export class ParsingTable {
 
     /**
      * @param {number} state
-     * @param {Symbol} symbol
+     * @param {JSymbol} symbol
      * @param {number} n
      */
     setGoto(state, symbol, n) {
@@ -145,6 +145,7 @@ export class ParsingTable {
         return res;
     }
 
+    /** @param {string} str */
     static fromString(str) {
         const arr = str.split(/\s*\n\s*/g);
         let idx = 0;
@@ -156,25 +157,17 @@ export class ParsingTable {
             for(let numEntries = +arr[idx++].split(' ')[1]; numEntries --> 0;) {
                 const entry = arr[idx++];
                 let [symbol, entryType, ...rest] = entry.split(' ');
-                symbol = Symbol.get(symbol);
+                symbol = JSymbol.get(symbol);
                 switch(entryType) {
                     case 'shift':
                         res.setActionShift(state, symbol, +rest[0]);
                         break;
                     case 'reduce':
+                        const options = JSON.parse(rest.shift());
                         let rule_str = rest.join(' ');
                         if(!rules.has(rule_str)) {
-                            let unwrap = true, chain = false;
-                            if(rest[0] === '__WRAP__') {
-                                unwrap = false;
-                                rest.shift();
-                            }
-                            else if(rest[0] === '__CHAIN__') {
-                                chain = true;
-                                rest.shift();
-                            }
-                            const [lhs,, ...rhs] = rest.map(i => Symbol.get(i.trim()));
-                            const rule = new Rule(lhs, new SymbolString(...rhs), chain, unwrap);
+                            const [lhs,, ...rhs] = rest.map(i => JSymbol.get(i.trim()));
+                            const rule = new Rule(lhs, new SymbolString(...rhs), options);
                             rules.set(rule_str, rule);
                         }
                         res.setActionReduce(state, symbol, rules.get(rule_str));

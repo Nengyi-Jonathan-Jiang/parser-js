@@ -1,4 +1,4 @@
-import {Token, Symbol} from '../../src/language/common/common.js';
+import {Token, JSymbol} from '../../src/language/common/common.js';
 
 import {dysprosiumAnalyzer} from "../../src/dysprosium/SemanticAnalyzer.js";
 import {dysprosiumLexer, dysprosiumParser} from "../../src/dysprosium/Pass1.js";

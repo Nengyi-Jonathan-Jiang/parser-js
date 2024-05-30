@@ -1,14 +1,14 @@
-import {Symbol} from "../../common/Symbol.js";
+import {JSymbol} from "../../common/JSymbol.js";
 
 /**
- * @implements {Iterable<Symbol>}
- * @extends {Set<Symbol>}
+ * @implements {Iterable<JSymbol>}
+ * @extends {Set<JSymbol>}
  */
 export class SymbolSet extends Set {
     dirty = true;
     #repr = '';
 
-    /** @param {Iterable<Symbol>|null} [values] */
+    /** @param {Iterable<JSymbol>|null} [values] */
     constructor(values=null) {
         super(values);
     }

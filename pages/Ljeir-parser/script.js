@@ -1,14 +1,14 @@
-import {Token, Symbol} from '../../src/language/common/common.js';
+import {Token, JSymbol} from '../../src/language/common/common.js';
 import {createLexerFromFile, createParserFromFile, fetchTextContents} from "../../src/language/util/FileLoader.js";
 
 const lexer = createLexerFromFile(
     await fetchTextContents('../../res/LJeir.lex'),
     [
-        Symbol.get('COMMENT'),
-        Symbol.get('WHITESPACE')
+        JSymbol.get('COMMENT'),
+        JSymbol.get('WHITESPACE')
     ]
 );
-const parser = createParserFromFile(Symbol.get('program'), await fetchTextContents('../../res/LJeir.bnf'));
+const parser = createParserFromFile(JSymbol.get('program'), await fetchTextContents('../../res/LJeir.bnf'));
 
 /** @type {HTMLTextAreaElement} */
 const code_input = document.getElementById('code-input');

@@ -1,4 +1,4 @@
-import {Symbol, Token} from "./common.js";
+import {JSymbol, Token} from "./common.js";
 
 /**
  * A class representing an abstract syntax tree
@@ -6,14 +6,14 @@ import {Symbol, Token} from "./common.js";
  * @implements {Iterable<AbstractSyntaxTree|Token>}
  */
 export class AbstractSyntaxTree {
-    /** @type {Symbol} */
+    /** @type {JSymbol} */
     #nodeType;
 
-    /** @type {(AbstractSyntaxTree|T)[]} */
+    /** @type {(AbstractSyntaxTree|Token)[]} */
     #children;
     
     /**
-     * @param {Symbol} nodeType The type of the internal node
+     * @param {JSymbol} nodeType The type of the internal node
      * @param {AbstractSyntaxTree|Token} children The childNodes of the internal node
      */
     constructor(nodeType, ...children) {
@@ -21,7 +21,7 @@ export class AbstractSyntaxTree {
         this.#children = children;
     }
 
-    /** @type {Symbol} */
+    /** @type {JSymbol} */
     get type() {
         return this.#nodeType;
     }
@@ -35,7 +35,16 @@ export class AbstractSyntaxTree {
     }
 
     /** @returns {IterableIterator<AbstractSyntaxTree|Token>} */
-    [window.Symbol.iterator]() {
-        return this.#children[window.Symbol.iterator]();
+    [Symbol.iterator]() {
+        return this.#children[Symbol.iterator]();
+    }
+
+    toString() {
+        if(this.children.length === 0){
+            return `${this.#nodeType}{}`;
+        }
+        else {
+            return `${this.#nodeType} {\n    ${this.children.join('\n').replace(/\n/g, '\n    ')}\n}`;
+        }
     }
 }

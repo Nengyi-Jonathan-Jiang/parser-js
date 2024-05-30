@@ -1,33 +1,38 @@
-import {Symbol} from "../common/Symbol.js";
+import {JSymbol} from "../common/JSymbol.js";
 import {SymbolString} from "./SymbolString.js";
 
+/**
+ * @export
+ * @typedef {{
+ *      behavior?: 'unwrap' | 'wrap' | 'discard'
+ * } | null} RuleOptions
+ * @typedef  {RuleOptions[]} RuleOptionsList
+ */
+
 export class Rule {
-    /** @type {boolean} */
-    #unwrap;
-    /** @type {boolean} */
-    #chained;
-    /** @type {Symbol} */
+    /** @type {JSymbol} */
     #lhs;
     /** @type {SymbolString} */
     #rhs;
     /** @type {boolean} */
     #empty;
 
+    /** @type {RuleOptionsList} */
+    #optionsList;
+
     /**
-     * @param {Symbol} lhs
+     * @param {JSymbol} lhs
      * @param {SymbolString} rhs
-     * @param {boolean} chained
-     * @param {boolean} unwrap
+     * @param {RuleOptionsList} [optionsList]
      */
-    constructor(lhs, rhs, chained, unwrap) {
+    constructor(lhs, rhs, optionsList=null) {
         this.#lhs = lhs;
         this.#rhs = rhs;
+        this.#optionsList = optionsList || new Array(rhs.size).fill(null);
         this.#empty = rhs.size === 0;
-        this.#chained = chained;
-        this.#unwrap = unwrap;
     }
 
-    /** @type {Symbol} */
+    /** @type {JSymbol} */
     get lhs() {
         return this.#lhs
     }
@@ -37,23 +42,15 @@ export class Rule {
         return this.#rhs
     }
 
-    get unwrap() {
-        return this.#unwrap;
-    }
-
-    get chained() {
-        return this.#chained;
-    }
-
     get empty() {
         return this.#empty
     }
 
+    get optionsList() {
+        return this.#optionsList;
+    }
+
     toString() {
-        return `${
-            this.unwrap ? '' : '__WRAP__ '
-        }${
-            this.chained ? '__CHAIN__ ' : ''
-        }${this.lhs} := ${this.rhs}`;
+        return `${JSON.stringify(this.#optionsList)} ${this.lhs} := ${this.rhs}`;
     }
 }

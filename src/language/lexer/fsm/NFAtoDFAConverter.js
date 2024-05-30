@@ -1,27 +1,27 @@
-import {Symbol} from "../../common/Symbol.js";
+import {JSymbol} from "../../common/JSymbol.js";
 import {DFA, NFA} from "./FiniteStateMachine.js";
 
 /**
  * @param {number[]} states
- * @param {Symbol} symbol
+ * @param {JSymbol} symbol
  */
 function createDFAStateInfo (states, symbol) {
-    return `${states.toSorted().join(',')}|${symbol?.name ?? ''}`;
+    return `${states.toSorted().join(',')}\0${symbol?.name ?? ''}`;
 }
 /**
  * @param {string} info
- * @returns {{states: number[], symbol: Symbol}}
+ * @returns {{states: number[], symbol: JSymbol}}
  */
 function getDFAStateInfo(info) {
-    const [states, symbol] = info.split(/\|/);
+    const [states, symbol] = info.split('\0');
     return {
         states: states.split(',').map(i => +i),
-        symbol: symbol ? Symbol.get(symbol) : null
+        symbol: symbol ? JSymbol.get(symbol) : null
     }
 }
 
 class MultiAcceptNFA extends NFA {
-    /** @type {Map<number, Symbol>} */
+    /** @type {Map<number, JSymbol>} */
     acceptingStates = new Map;
     /** @type {Map<number, number>} */
     statePriority = new Map;
@@ -87,7 +87,7 @@ class NFA2DFA {
     /** @param {Set<number>} states */
     epsilonClosure(states) {
         const closure = new Set(states);
-        /** @type {Symbol} */
+        /** @type {JSymbol} */
         let accepted = null;
         let priority = Number.POSITIVE_INFINITY;
 
@@ -209,7 +209,7 @@ function remap_states (table, state_counter) {
 }
 
 /**
- * @param {{symbol: Symbol, nfa: NFA}} rules
+ * @param {{symbol: JSymbol, nfa: NFA}} rules
  * @returns
  */
 export function compileToDFA (...rules) {

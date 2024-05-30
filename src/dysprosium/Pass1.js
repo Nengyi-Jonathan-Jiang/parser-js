@@ -1,13 +1,13 @@
 import {createLexerFromFile, createParserFromFile, fetchTextContents} from "../language/util/FileLoader.js";
-import {Symbol} from "../language/common/Symbol.js";
+import {JSymbol} from "../language/common/JSymbol.js";
 import {ParsingTable} from "../language/parser/lr_parser/ParsingTable.js";
 import {LRParser} from "../language/parser/lr_parser/LRParser.js";
 
 export const dysprosiumLexer = createLexerFromFile(
     await fetchTextContents('../../res/lang/dysprosium/dysprosium.lex'),
     [
-        Symbol.get('COMMENT'),
-        Symbol.get('WHITESPACE')
+        JSymbol.get('COMMENT'),
+        JSymbol.get('WHITESPACE')
     ]
 );
 
@@ -25,7 +25,7 @@ let parser;
 if(window.localStorage.getItem('parse-file') !== combined_parse_file || !(window.localStorage.getItem('parse-table') ?? '').trim()) {
     window.localStorage.setItem('parse-file', combined_parse_file);
     parser = createParserFromFile(
-        Symbol.get('program'),
+        JSymbol.get('program'),
         combined_parse_file
     );
     const pTable = parser.table;
@@ -42,7 +42,7 @@ else {
 
 export const dysprosiumParser = parser;
 window.dysprosiumParser = parser;
-window.getSymbol = i => Symbol.get(i);
+window.getSymbol = i => JSymbol.get(i);
 
 window.clearSavedParser = function() {
     window.localStorage.setItem('parse-file', null);

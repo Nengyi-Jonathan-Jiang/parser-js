@@ -1,5 +1,5 @@
-export class Symbol {
-    /** @type {Map<string, Symbol>} */
+export class JSymbol {
+    /** @type {Map<string, JSymbol>} */
     static #map = new Map;
     /** @type {number} */
     static #nextID = 0;
@@ -12,11 +12,11 @@ export class Symbol {
     /** @private */
     constructor(name) {
         this.#name = name;
-        this.#id = Symbol.#nextID++;
+        this.#id = JSymbol.#nextID++;
     }
 
     /**
-     * The name of the {@link Symbol}
+     * The name of the {@link JSymbol}
      * @type {string}
      */
     get name() {
@@ -24,7 +24,7 @@ export class Symbol {
     }
 
     /**
-     * A unique integer corresponding to the {@link Symbol}
+     * A unique integer corresponding to the {@link JSymbol}
      * @type {number}
      */
     get id() {
@@ -32,24 +32,25 @@ export class Symbol {
     }
 
     /**
-     * Get the {@link Symbol} with the given name, or creates a new one if it does not exist
+     * Get the {@link JSymbol} with the given name, or creates a new one if it does not exist
      * @param {string} name
-     * @returns {Symbol}
+     * @returns {JSymbol}
      */
     static get(name) {
         const map = this.#map;
 
         if(!map.has(name)) {
-            map.set(name, new Symbol(name));
+            map.set(name, new JSymbol(name));
         }
         return map.get(name);
     }
 
+    /** @returns {string} */
     toString() {
         return this.#name;
     }
 
-    static __EPSILON__ = Symbol.get('\x01EPSILON\x01');
-    static __START__ = Symbol.get('\x01START\x01');
-    static __EOF__ = Symbol.get('\x01END\x01');
+    static __EPSILON__ = JSymbol.get('\x01EPSILON\x01');
+    static __START__ = JSymbol.get('\x01START\x01');
+    static __EOF__ = JSymbol.get('\x01END\x01');
 }

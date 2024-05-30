@@ -1,4 +1,4 @@
-import {Token, Symbol} from '../../src/language/common/common.js';
+import {Token, JSymbol} from '../../src/language/common/common.js';
 
 import {createLexerFromFile, createParserFromFile, fetchTextContents} from "../../src/language/util/FileLoader.js";
 import {ParsingTable} from "../../src/language/parser/lr_parser/ParsingTable.js";
@@ -43,7 +43,7 @@ let parser;
 if(window.localStorage.getItem('parse-file') !== combined_parse_file || !(window.localStorage.getItem('parse-table') ?? '').trim()) {
     window.localStorage.setItem('parse-file', combined_parse_file);
     parser = createParserFromFile(
-        Symbol.get('program'),
+        JSymbol.get('program'),
         combined_parse_file
     );
     const pTable = parser.table;
@@ -60,7 +60,7 @@ else {
 
 export const dysprosiumParser = parser;
 window.dysprosiumParser = parser;
-window.getSymbol = i => Symbol.get(i);
+window.getSymbol = i => JSymbol.get(i);
 
 window.clearSavedParser = function() {
     window.localStorage.setItem('parse-file', null);

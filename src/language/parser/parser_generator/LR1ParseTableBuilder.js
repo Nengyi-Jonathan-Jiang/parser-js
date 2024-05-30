@@ -1,5 +1,5 @@
 import {SymbolSet} from "./SymbolSet.js";
-import {Symbol} from "../../common/Symbol.js";
+import {JSymbol} from "../../common/JSymbol.js";
 import {Grammar} from "../grammar/Grammar.js";
 import {Item} from "./item/Item.js";
 import {ItemSet} from "./item/ItemSet.js";
@@ -50,11 +50,11 @@ export class LR1ParseTableBuilder extends LRParseTableBuilderBase {
 
                 const rest = itm.rule.rhs.substring(itm.pos + 1);
 
-                /** @type {SymbolSet<Symbol>} */
+                /** @type {SymbolSet<JSymbol>} */
                 let newLookahead = new SymbolSet(this.grammar.first(rest));
-                if(newLookahead.has(Symbol.__EPSILON__)) {
-                    newLookahead.delete(Symbol.__EPSILON__);
-                    for(/** @type {Symbol} */ const lookahead of itm.lookahead) {
+                if(newLookahead.has(JSymbol.__EPSILON__)) {
+                    newLookahead.delete(JSymbol.__EPSILON__);
+                    for(/** @type {JSymbol} */ const lookahead of itm.lookahead) {
                         newLookahead.add(lookahead);
                     }
                 }

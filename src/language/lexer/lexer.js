@@ -1,4 +1,4 @@
-import {Token, Symbol} from "../common/common.js";
+import {Token, JSymbol} from "../common/common.js";
 
 import {DFA_INITIAL_STATE, FSM_ERROR_STATE} from "./fsm/FiniteStateMachine.js";
 
@@ -11,12 +11,12 @@ export class Lexer {
     /** @type {DFA} */
     #dfa;
 
-    /** @type {Set<Symbol>} */
+    /** @type {Set<JSymbol>} */
     #ignored_symbols;
 
     /**
      * @param {DFA} dfa
-     * @param {Iterable<Symbol>} ignored_symbols
+     * @param {Iterable<JSymbol>} ignored_symbols
      */
     constructor(dfa, ignored_symbols) {
         this.#dfa = dfa;
@@ -38,7 +38,7 @@ export class Lexer {
             let next = lex.next();
             res.push(next);
 
-            if(next.type === Symbol.__EOF__) break;
+            if(next.type === JSymbol.__EOF__) break;
         }
 
         return res;
@@ -54,7 +54,7 @@ export class Lex {
     /** @type {string} */
     #src;
 
-    /** @type {Set<Symbol>} */
+    /** @type {Set<JSymbol>} */
     #ignored_symbols;
 
     #position = 0;
@@ -64,7 +64,7 @@ export class Lex {
     /**
      * @param {DFA} dfa
      * @param {string} src
-     * @param {Set<Symbol>} ignored_symbols
+     * @param {Set<JSymbol>} ignored_symbols
      */
     constructor(dfa, src, ignored_symbols) {
         this.#ignored_symbols = ignored_symbols;
@@ -79,10 +79,10 @@ export class Lex {
     /** @returns {Token | null} */
     try_get_next() {
         if (this.done) {
-            return new Token(Symbol.__EOF__, '', this.#position, this.#position);
+            return new Token(JSymbol.__EOF__, '', this.#position, this.#position);
         }
 
-        /** @type {Symbol | null} */
+        /** @type {JSymbol | null} */
         let accepted_symbol = null;
         let token_start = this.#position
         let token_end = this.#position;

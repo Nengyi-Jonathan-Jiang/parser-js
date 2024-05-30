@@ -100,21 +100,49 @@ export class LRParse {
                 const gotoEntry = this.#table.getGoto(this.#stateStack[this.#stateStack.length - 1], lhs);
                 this.#stateStack.push(gotoEntry.nextState);
 
-                // Unwrap node if allowed to simplify the parse tree
-                if (reduceRule.rhs.size === 1 && reduceRule.unwrap) continue;
+                // // Unwrap node if allowed to simplify the parse tree
+                // if (reduceRule.rhs.size === 1 && reduceRule.unwrap) continue;
+                //
+                // // Handle chained nodes
+                // /** @type {AbstractSyntaxTree[]} */
+                // let children = new Array(reduceRule.rhs.size);
+                // for (let j = reduceRule.rhs.size - 1; j >= 0; j--)
+                //     children[j] = this.#parseTreeNodeStack.pop();
+                //
+                // if (reduceRule.chained) {
+                //     // Unwrap matching children
+                //     children = [].concat(...children.map(i => i.type === lhs ? i.children : [i]));
+                // }
 
-                // Handle chained nodes
-                /** @type {AbstractSyntaxTree[]} */
-                const children = new Array(reduceRule.rhs.size);
-                for (let j = reduceRule.rhs.size - 1; j >= 0; j--)
-                    children[j] = this.#parseTreeNodeStack.pop();
+                // if (reduceRule.chained) {
+                //     // Unwrap matching children
+                //     children = [].concat(...children.map(i => i.type === lhs ? i.children : [i]));
+                // }
 
-                if (reduceRule.chained) {
-                    const reducer = children[0];
-                    if (reducer.type === lhs) {
-                        const joinedChildren = [...reducer.children, ...children.toSpliced(0, 1)];
-                        this.#parseTreeNodeStack.push(new AbstractSyntaxTree(lhs, ...joinedChildren));
-                        continue;
+                /** @type {(AbstractSyntaxTree|Token)[]} */
+                let children = [];
+                for (let j = reduceRule.rhs.size - 1; j >= 0; j--) {
+                    const child = this.#parseTreeNodeStack.pop();
+                    const options = reduceRule.optionsList[j];
+
+                    switch(options?.behavior) {
+                        case undefined:
+                            if(child instanceof AbstractSyntaxTree && child.children.length === 1) {
+                                children.unshift(child.children[0]);
+                            }
+                            else {
+                                children.unshift(child);
+                            }
+                            break;
+                        case 'unwrap':
+                            children.unshift(...child.children);
+                            break;
+                        case 'wrap':
+                            children.unshift(child);
+                            break;
+                        case 'discard':
+                            // Do nothing
+                            break;
                     }
                 }
 

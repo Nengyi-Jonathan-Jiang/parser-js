@@ -1,7 +1,7 @@
-import {Symbol} from './Symbol.js';
+import {JSymbol} from './JSymbol.js';
 
 export class Token {
-    /** @type {Symbol} */
+    /** @type {JSymbol} */
     #type;
     
     /** @type {number} */
@@ -16,7 +16,7 @@ export class Token {
     data = {};
 
     /**
-     * @param {Symbol} type The type of the token
+     * @param {JSymbol} type The type of the token
      * @param {string} value The string contents of the token
      * @param {number} startIndex The start index of the token in the source string
      * @param {number} endIndex The end index of the token in the source string
@@ -30,7 +30,7 @@ export class Token {
 
     /**
      * The type of the token
-     * @type {Symbol}
+     * @type {JSymbol}
      */
     get type() {
         return this.#type;
@@ -63,9 +63,9 @@ export class Token {
     toString() {
         const {type, value} = this;
         return (
-            type === Symbol.__START__ ? '__START__' :
-            type === Symbol.__EOF__ ? '__EOF___' :
-            type === Symbol.__EPSILON__ ? '__EPSILON__' :
+            type === JSymbol.__START__ ? '__START__' :
+            type === JSymbol.__EOF__ ? '__EOF___' :
+            type === JSymbol.__EPSILON__ ? '__EPSILON__' :
             type.name === value
                 ? type.name
                 : `${type}<${value}>`
